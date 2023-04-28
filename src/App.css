@@ -37,6 +37,12 @@
   background-color: #000;
   color: #fff;
 }
+#sendButton {
+  background-color: blue;
+  border-radius: 10%;
+  color: white;
+  padding: 15px;
+}
 .error{
   color: red;
   font-size: 10px;
@@ -76,6 +82,9 @@ body {
 }
 .chatWindow {
   display: grid;
+  margin: 0 auto;
+  max-width: 1500px;
+  height: 90vh;
   grid-column-start: 2;
   grid-column-end: 9;
   grid-row-start: 1;
@@ -83,10 +92,22 @@ body {
   background: rgb(233, 229, 229);
   border-radius: 5px;
 }
+#receiverSelection {
+  padding: 20px;
+}
+#members {
+  font-size: 18px;
+  padding: 10px 30px;
+  margin: 0 10px;
+  border-radius: 20px;
+}
 .chatInputWrapper {
   display: grid;
   grid-row-start: 190;
   grid-row-end: 190;
+}
+.chatInputWrapper form {
+  display: flex;
 }
 ::-webkit-scrollbar {
   display: none;
@@ -97,9 +118,9 @@ body {
   background: none;
   margin: 0;
   padding: 0 0 50px 0;
-  margin-top: 60px;
+  margin-top: 400px;
   margin-bottom: 10px;
-  max-height: 400px;
+  max-height: 500px;
   overflow: scroll;
   scroll-behavior: smooth;
 }
