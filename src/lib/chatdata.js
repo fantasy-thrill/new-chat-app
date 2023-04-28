@@ -1,25 +1,28 @@
 import { CometChat } from "@cometchat-pro/chat";
 import config from "../config";
+// import { GroupMembersRequestOptions } from "@cometchat-pro/sdk";
+
 
 export default class CCManager {
   static LISTENER_KEY_MESSAGE = "msglistener";
-  static appId = config.appId;
+  static appID = config.appID;
   static apiKey = config.apiKey;
   static LISTENER_KEY_GROUP = "grouplistener";
   static init() {
-    return CometChat.init(CCManager.appId);
+    const appSetting = new CometChat.AppSettingsBuilder().subscribePresenceForAllUsers().setRegion("US").build();
+    return CometChat.init(CCManager.appID, appSetting);
   }
-  static getTextMessage(uid, text, msgType) {
+  static getTextMessage(UID, text, msgType) {
     if (msgType === "user") {
       return new CometChat.TextMessage(
-        uid,
+        UID,
         text,
         CometChat.MESSAGE_TYPE.TEXT,
         CometChat.RECEIVER_TYPE.USER
       );
     } else {
       return new CometChat.TextMessage(
-        uid,
+        UID,
         text,
         CometChat.MESSAGE_TYPE.TEXT,
         CometChat.RECEIVER_TYPE.GROUP
@@ -40,12 +43,19 @@ export default class CCManager {
     callback();
     return messagesRequest.fetchPrevious();
   }
-  static sendGroupMessage(UID, message) {
-    const textMessage = this.getTextMessage(UID, message, "group");
+  static sendIndividualMessage(UID, message) {
+    const textMessage = this.getTextMessage(UID, message, "user");
+    return CometChat.sendMessage(textMessage);
+  }
+  static sendGroupMessage(GUID, message) {
+    const textMessage = this.getTextMessage(GUID, message, "group");
     return CometChat.sendMessage(textMessage);
   }
   static joinGroup(GUID) {
     return CometChat.joinGroup(GUID, CometChat.GROUP_TYPE.PUBLIC, "");
+  }
+  static getGroupMembers(GUID) {
+    return new CometChat.GroupMembersRequestBuilder(GUID).setLimit(100).build()
   }
   static addMessageListener(callback) {
     CometChat.addMessageListener(
