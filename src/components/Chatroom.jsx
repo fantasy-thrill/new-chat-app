@@ -1,22 +1,25 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import config from "../config.js"
 import chat from "../lib/chatdata.js"
 
 function Chatroom() {
  const [receiverID, setReceiverID] = useState("");
  const [messageText, setMessageText] = useState("");
- const [groupMessage, setGroupMessage] = useState([]);
- const [user, setUser] = useState({});
+ const [textConversation, setTextConversation] = useState([]);
+ const [memberList, setMemberList] = useState([])
+ const [user, setUser] = useState(null);
  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
+ const navigate = useNavigate();
  const GUID = config.GUID;
 
- function sendTextMessage() {
-  chat.sendIndividualMessage(UID, messageText).then(
+ function sendTextMessage(receipient) {
+  chat.sendIndividualMessage(receipient, messageText).then(
     message => {
       console.log("Message sent successfully:", message);
+      setTextConversation(prevState => [...prevState, message]);
       setMessageText("");
     },
     error => {
@@ -56,7 +59,7 @@ function Chatroom() {
 
  function handleSubmit(event) {
    event.preventDefault();
-   sendTextMessage();
+   sendTextMessage(receiverID);
    event.target.reset();
  };
 
@@ -85,17 +88,14 @@ function Chatroom() {
    .then(
     groupMembers => {
       const groupMemberNames = groupMembers
-        .map(member => member["uid"])
-        .filter(member => member !== user["uid"])
+        .map((member, index) => ({ 
+          name: member["uid"],
+          key: "00" + (index + 1) 
+        }))
+        .filter(member => member["name"] !== user["uid"])
+      setMemberList(groupMemberNames)  
       console.log(groupMemberNames);
-      
-      const receiverSelection = document.getElementById("members")
-      for (const member of groupMemberNames) {
-        const selection = document.createElement("option")
-        selection.setAttribute("value", member)
-        selection.textContent = member
-        receiverSelection.appendChild(selection)
-      }
+      console.log(user["uid"])
     },
     error => {
       console.log("Error fetching group members:", error);
@@ -104,47 +104,72 @@ function Chatroom() {
  }
 
  function messageListener() {
-   chat.addMessageListener((data, error) => {
+   chat.addMessageListener((message, error) => {
      if (error) return console.log(`error: ${error}`);
-     setGroupMessage(prevState => [...prevState, data]);
+     setTextConversation(prevState => [...prevState, message]);
      scrollToBottom()
    });
  };
 
+ function logout() {
+  chat.logout()
+  navigate("/login")
+ }
+ 
  useEffect(() => {
    getUser();
-   getGroupList();
    messageListener();
    // chat.joinGroup(GUID)
  }, []);
+
+ useEffect(() => {
+  if (user !== null) {
+    getGroupList()
+  }
+ }, [user])
+
+ useEffect(() => {
+  console.log(receiverID)
+ }, [receiverID])
 
  if (!isAuthenticated) {
   return <Navigate to="/" replace />;
 }
 
  return (
+  <>
+   <div id="logout">
+    <button id="logout-btn" onClick={logout}>Logout</button>
+   </div>
    <div className="chatWindow">
     <div id="receiverSelection">
       <label htmlFor="members">Send to: </label>
-      <select name="members" id="members">
-        <option value="">Select recipient</option>
+      <select name="members" id="members" onChange={(event) => setReceiverID(event.target.value)}>
+        <option value="">Select receipient</option>
+        {memberList.map(member => 
+          <option 
+            value={member["name"]} 
+            key={member["key"]}>
+              {member["name"]}
+          </option>
+        )}
       </select>
     </div>
      <ul className="chat" id="chatList">
-       {groupMessage.map(data => (
-         <div key={data.id}>
-           {user.uid === data.sender.uid ? (
+       {textConversation.map(message => (
+         <div key={message.id}>
+           {user.uid === message.sender.uid ? (
              <li className="self">
                <div className="msg">
-                 <p>{data.sender.uid}</p>
-                 <div className="message">{data.data.text}</div>
+                 <p>{message.sender.uid}</p>
+                 <div className="message">{message.text}</div>
                </div>
              </li>
            ) : (
              <li className="other">
                <div className="msg">
-                 <p>{data.sender.uid}</p>
-                 <div className="message">{data.data.text}</div>
+                 <p>{message.sender.uid}</p>
+                 <div className="message">{message.text}</div>
                </div>
              </li>
            )}
@@ -164,6 +189,7 @@ function Chatroom() {
        </form>
      </div>
    </div>
+  </>
  );
 };
 

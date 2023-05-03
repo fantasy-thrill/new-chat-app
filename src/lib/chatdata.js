@@ -1,7 +1,5 @@
 import { CometChat } from "@cometchat-pro/chat";
 import config from "../config";
-// import { GroupMembersRequestOptions } from "@cometchat-pro/sdk";
-
 
 export default class CCManager {
   static LISTENER_KEY_MESSAGE = "msglistener";
@@ -9,7 +7,10 @@ export default class CCManager {
   static apiKey = config.apiKey;
   static LISTENER_KEY_GROUP = "grouplistener";
   static init() {
-    const appSetting = new CometChat.AppSettingsBuilder().subscribePresenceForAllUsers().setRegion("US").build();
+    const appSetting = new CometChat.AppSettingsBuilder()
+      .subscribePresenceForAllUsers()
+      .setRegion("US")
+      .build();
     return CometChat.init(CCManager.appID, appSetting);
   }
   static getTextMessage(UID, text, msgType) {
@@ -17,14 +18,12 @@ export default class CCManager {
       return new CometChat.TextMessage(
         UID,
         text,
-        CometChat.MESSAGE_TYPE.TEXT,
         CometChat.RECEIVER_TYPE.USER
       );
     } else {
       return new CometChat.TextMessage(
         UID,
         text,
-        CometChat.MESSAGE_TYPE.TEXT,
         CometChat.RECEIVER_TYPE.GROUP
       );
     }
@@ -66,5 +65,10 @@ export default class CCManager {
         }
       })
     );
+  }
+  static logout() {
+    CometChat.logout()
+      .then(() => { console.log("Logout successful") })
+      .catch(error => { console.log("Logout failed with error:", error) }) 
   }
 }

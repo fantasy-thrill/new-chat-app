@@ -80,6 +80,21 @@ body {
   grid-row-end: 190;
   border-radius: 5px;
 }
+#logout {
+  max-width: 1500px;
+  margin: 0 auto 20px auto;
+}
+#logout-btn {
+  background-color: #187dbc;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  padding: 10px;
+  font-size: 1em;
+  cursor: pointer;
+  display: block;
+  margin: 0 0 0 auto;
+}
 .chatWindow {
   display: grid;
   margin: 0 auto;

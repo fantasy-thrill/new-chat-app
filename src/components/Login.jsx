@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import chat from "../lib/chatdata"
+import logo from "../logo.svg"
 
 function Login() {
  const [username, setUsername] = useState('');
@@ -62,7 +63,7 @@ function Login() {
        <input onChange={handleInputChange} type="text" />
        <span className="error">{errorMessage}</span>
        {isSubmitting ? (
-         <img src="./logo.svg" alt="Spinner component" className="App-logo" />
+         <img src={logo} alt="Spinner component" className="App-logo" />
        ) : (
          <input
            type="submit"
