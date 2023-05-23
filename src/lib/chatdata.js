@@ -42,6 +42,19 @@ export default class CCManager {
     callback();
     return messagesRequest.fetchPrevious();
   }
+  static messagesRequest(UID, limit) {
+    const messagesRequest = new CometChat.MessagesRequestBuilder()
+      .setUID(UID)
+      .setLimit(limit)
+      .build();
+    return messagesRequest.fetchPrevious()
+  }
+  static conversationsRequest() {
+    return new CometChat.ConversationsRequestBuilder()
+     .setLimit(30)
+     .setConversationType("user")
+     .build()
+  }
   static sendIndividualMessage(UID, message) {
     const textMessage = this.getTextMessage(UID, message, "user");
     return CometChat.sendMessage(textMessage);

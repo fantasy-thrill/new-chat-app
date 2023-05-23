@@ -95,6 +95,43 @@ body {
   display: block;
   margin: 0 0 0 auto;
 }
+.icon-spacing {
+  margin-right: 10px;
+}
+#header {
+  display: flex;
+  justify-content: space-between;
+}
+#new-msg-btn {
+  background-color: #187dbc;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 15px;
+  font-size: 1em;
+  cursor: pointer;
+  height: fit-content;
+  margin: auto 0;
+}
+#listWindow {
+  max-width: 1500px;
+  height: 80vh;
+  margin: 0 auto;
+  overflow: scroll;
+  background-color: #e1dfdf;
+  border-radius: 20px;
+  padding: 0 50px;
+  box-sizing: border-box;
+}
+#messageList:last-of-type {
+  border-bottom: 1px solid black;
+}
+.conversation {
+  border-top: 1px solid black;
+  padding: 0 15px;
+  cursor: pointer;
+  display: flex;
+}
 .chatWindow {
   display: grid;
   margin: 0 auto;
@@ -106,6 +143,18 @@ body {
   grid-row-end: 190;
   background: rgb(233, 229, 229);
   border-radius: 5px;
+}
+.userID {
+  font-size: 0.5em;
+  font-style: italic;
+  opacity: 0.5;
+  margin-left: 10px;
+}
+.avatar {
+  max-width: 120px;
+}
+.conversationInfo {
+  padding-left: 20px;
 }
 #receiverSelection {
   padding: 20px;
@@ -211,6 +260,7 @@ body {
   order: 1;
   border-bottom-right-radius: 0px;
   box-shadow: 1px 2px 0px #d4d4d4;
+  background-color: #aad6eb;
 }
 .self .avatar {
   order: 2;

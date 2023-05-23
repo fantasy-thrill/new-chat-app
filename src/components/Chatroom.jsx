@@ -1,11 +1,18 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import config from "../config.js"
 import chat from "../lib/chatdata.js"
 
+function useQuery() {
+  const { search } = useLocation();
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
+
 function Chatroom() {
- const [receiverID, setReceiverID] = useState("");
+ const query = useQuery();
+
+ const [receiverID, setReceiverID] = useState(query.get("receipient") ?? "");
  const [messageText, setMessageText] = useState("");
  const [textConversation, setTextConversation] = useState([]);
  const [memberList, setMemberList] = useState([])
@@ -111,6 +118,14 @@ function Chatroom() {
    });
  };
 
+ function getConversation() {
+  chat.messagesRequest(receiverID, 100)
+     .then(
+      messages => setTextConversation(messages),
+      error => console.log("Could not load messages: " + error)
+     )
+ }
+
  function logout() {
   chat.logout()
   navigate("/login")
@@ -129,7 +144,9 @@ function Chatroom() {
  }, [user])
 
  useEffect(() => {
-  console.log(receiverID)
+  if (receiverID !== "") {
+    getConversation()
+  }
  }, [receiverID])
 
  if (!isAuthenticated) {
@@ -144,7 +161,7 @@ function Chatroom() {
    <div className="chatWindow">
     <div id="receiverSelection">
       <label htmlFor="members">Send to: </label>
-      <select name="members" id="members" onChange={(event) => setReceiverID(event.target.value)}>
+      <select name="members" value={receiverID} id="members" onChange={(event) => setReceiverID(event.target.value)}>
         <option value="">Select receipient</option>
         {memberList.map(member => 
           <option 
@@ -161,14 +178,12 @@ function Chatroom() {
            {user.uid === message.sender.uid ? (
              <li className="self">
                <div className="msg">
-                 <p>{message.sender.uid}</p>
                  <div className="message">{message.text}</div>
                </div>
              </li>
            ) : (
              <li className="other">
                <div className="msg">
-                 <p>{message.sender.uid}</p>
                  <div className="message">{message.text}</div>
                </div>
              </li>

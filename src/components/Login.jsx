@@ -45,7 +45,7 @@ function Login() {
   return (
     <Navigate
       to={{
-        pathname: '/chat',
+        pathname: '/recentmsgs',
         state: { user: user }
       }}
       replace
