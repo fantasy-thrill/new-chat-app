@@ -79,6 +79,28 @@ export default class CCManager {
       })
     );
   }
+  static markAsDelivered(message) {
+    CometChat.markAsDelivered(message)
+     .then(
+      () => {
+        console.log("Message delivered");
+      },
+      (error) => {
+        console.log("Message not delivered:", error.message);
+      }
+     )
+  }
+  static markAsRead(message) {
+    CometChat.markAsRead(message)
+     .then(
+      () => {
+        console.log("Message read");
+      },
+      (error) => {
+        console.log("Message not read:", error.message);
+      }
+     )
+  }
   static logout() {
     CometChat.logout()
       .then(() => { console.log("Logout successful") })

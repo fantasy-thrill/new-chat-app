@@ -3,6 +3,8 @@ import { useState, useEffect, useMemo } from "react";
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import config from "../config.js"
 import chat from "../lib/chatdata.js"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 
 function useQuery() {
   const { search } = useLocation();
@@ -114,6 +116,7 @@ function Chatroom() {
    chat.addMessageListener((message, error) => {
      if (error) return console.log(`error: ${error}`);
      setTextConversation(prevState => [...prevState, message]);
+     if (message["sender"]["uid"] !== user["uid"]) { chat.markAsRead(message) }
      scrollToBottom()
    });
  };
@@ -121,9 +124,16 @@ function Chatroom() {
  function getConversation() {
   chat.messagesRequest(receiverID, 100)
      .then(
-      messages => setTextConversation(messages),
+      messages => {
+        setTextConversation(messages)
+        console.log(messages)
+      },
       error => console.log("Could not load messages: " + error)
      )
+ }
+
+ function backToConversationList() {
+  navigate("/recentmsgs")
  }
 
  function logout() {
@@ -155,8 +165,15 @@ function Chatroom() {
 
  return (
   <>
-   <div id="logout">
-    <button id="logout-btn" onClick={logout}>Logout</button>
+   <div className="navigation-chat">
+    <button className="nav-btn" onClick={backToConversationList}>
+      <FontAwesomeIcon icon={faArrowLeft} size="lg" className="icon-spacing" />
+      Back
+    </button>
+    <button className="nav-btn" onClick={logout}>
+    <FontAwesomeIcon icon={faRightToBracket} size="lg" className="icon-spacing" />
+      Logout
+    </button>
    </div>
    <div className="chatWindow">
     <div id="receiverSelection">

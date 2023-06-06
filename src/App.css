@@ -38,10 +38,13 @@
   color: #fff;
 }
 #sendButton {
-  background-color: blue;
-  border-radius: 10%;
+  background-color: #187dbc;
+  border: none;
+  border-radius: 10px;
   color: white;
   padding: 15px;
+  cursor: pointer;
+  font-size: 1em;
 }
 .error{
   color: red;
@@ -80,20 +83,35 @@ body {
   grid-row-end: 190;
   border-radius: 5px;
 }
-#logout {
-  max-width: 1500px;
-  margin: 0 auto 20px auto;
+.userInfo {
+  height: fit-content;
+  margin: 0 30px;
 }
-#logout-btn {
+.logout {
+  max-width: 1500px;
+  margin: 0 auto 15px auto;
+}
+.navigation-chat {
+  max-width: 1500px;
+  margin: 0 auto 15px auto;
+  display: flex;
+  justify-content: space-between;
+}
+.navigation-recent {
+  max-width: 1500px;
+  margin: 0 auto 15px auto;
+  display: flex;
+  justify-content: flex-end;
+}
+.nav-btn {
   background-color: #187dbc;
   border: none;
   border-radius: 10px;
   color: white;
+  width: 120px;
   padding: 10px;
   font-size: 1em;
   cursor: pointer;
-  display: block;
-  margin: 0 0 0 auto;
 }
 .icon-spacing {
   margin-right: 10px;
@@ -156,6 +174,9 @@ body {
 .conversationInfo {
   padding-left: 20px;
 }
+.last-message {
+  opacity: 0.5;
+}
 #receiverSelection {
   padding: 20px;
 }
@@ -182,9 +203,8 @@ body {
   background: none;
   margin: 0;
   padding: 0 0 50px 0;
-  margin-top: 400px;
-  margin-bottom: 10px;
-  max-height: 500px;
+  /* margin-bottom: 10px; */
+  max-height: 550px;
   overflow: scroll;
   scroll-behavior: smooth;
 }
@@ -370,4 +390,42 @@ input.textarea {
   padding-right: 55px;
   color: #666;
   font-weight: 400;
+}
+
+/* Responsive design for smartphone screens */
+@media screen and (max-width: 400px) {
+  #listWindow {
+    padding: 10px 20px 0
+  }
+  .navigation-recent {
+    justify-content: space-between;
+  }
+  .userInfo {
+    margin: 0;
+  }
+  #header {
+    padding-bottom: 10px;
+    flex-direction: column-reverse;
+  }
+  #header h1 {
+    font-size: 1.5em;
+    text-align: center
+  }
+  #new-msg-btn {
+    width: 100%
+  }
+  .profilePic {
+    display: flex;
+    align-items: center
+  }
+  .avatar {
+    max-width: 90px
+  } 
+  .conversationInfo {
+    font-size: 16px
+  }
+  .msg {
+    min-width: 0;
+    max-width: 250px;
+  }
 }
