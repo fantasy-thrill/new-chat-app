@@ -69,15 +69,32 @@ export default class CCManager {
   static getGroupMembers(GUID) {
     return new CometChat.GroupMembersRequestBuilder(GUID).setLimit(100).build()
   }
-  static addMessageListener(callback) {
+  static addMessageListener(firstCallback) {
     CometChat.addMessageListener(
       this.LISTENER_KEY_MESSAGE,
       new CometChat.MessageListener({
         onTextMessageReceived: textMessage => {
-          callback(textMessage);
+          firstCallback(textMessage);
         }
+        // onMessagesDelivered: messageReceipt => {
+        //   secondCallback(messageReceipt)
+        // },
+        // onMessagesRead: messageReceipt => {
+        //   thirdCallback(messageReceipt)
+        // }
       })
     );
+  }
+  static eventReceipts(messageID) {
+    CometChat.getMessageReceipts(messageID)
+      .then(
+        receipts => {
+          console.log("Message details fetched:", receipts);
+        },
+        error => {
+          console.log("Error in getting message details:", error);
+        }
+      )
   }
   static markAsDelivered(message) {
     CometChat.markAsDelivered(message)

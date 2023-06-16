@@ -168,14 +168,24 @@ body {
   opacity: 0.5;
   margin-left: 10px;
 }
+.receiver {
+  margin-block-end: 0.5em;
+}
 .avatar {
   max-width: 120px;
 }
 .conversationInfo {
   padding-left: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 600px;
 }
 .last-message {
   opacity: 0.5;
+}
+.dateOrTime {
+  margin: 10px 0 0 auto;
 }
 #receiverSelection {
   padding: 20px;
@@ -193,6 +203,7 @@ body {
 }
 .chatInputWrapper form {
   display: flex;
+  background-color: #fafafa;
 }
 ::-webkit-scrollbar {
   display: none;
@@ -202,9 +213,9 @@ body {
   list-style: none;
   background: none;
   margin: 0;
-  padding: 0 0 50px 0;
-  /* margin-bottom: 10px; */
-  max-height: 550px;
+  padding: 0 0 20px 0;
+  min-height: 465px;
+  max-height: 700px;
   overflow: scroll;
   scroll-behavior: smooth;
 }
@@ -212,6 +223,7 @@ body {
   padding: 0.5rem;
   overflow: hidden;
   display: flex;
+  flex-direction: column-reverse;
 }
 .chat .avatar {
   position: relative;
@@ -255,12 +267,16 @@ body {
   -moz-user-select: none;
   -ms-user-select: none;
 }
+.other {
+  justify-content: flex-start;
+  align-items: flex-start;
+}
 .other .msg {
   order: 1;
   border-top-left-radius: 0px;
   box-shadow: -1px 2px 0px #d4d4d4;
 }
-.other:before {
+/* .other:before {
   content: "";
   position: relative;
   top: 0px;
@@ -271,7 +287,7 @@ body {
   border: 5px solid #fff;
   border-left-color: transparent;
   border-bottom-color: transparent;
-}
+} */
 .self {
   justify-content: flex-end;
   align-items: flex-end;
@@ -322,6 +338,9 @@ body {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+}
+.displayed {
+  display: block !important;
 }
 @media screen and (max-width: 800px) {
   .msg img {
@@ -386,10 +405,12 @@ input.textarea {
   background: #fafafa;
   border: none;
   outline: none;
-  padding-left: 55px;
   padding-right: 55px;
-  color: #666;
+  color: rgb(83, 82, 82);
   font-weight: 400;
+  font-size: 1em;
+  font-family: BlinkMacSystemFont, "Segoe UI", Lato,
+  Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
 /* Responsive design for smartphone screens */
@@ -409,20 +430,43 @@ input.textarea {
   }
   #header h1 {
     font-size: 1.5em;
-    text-align: center
+    text-align: center;
+    margin: 0.5em 0;
   }
   #new-msg-btn {
-    width: 100%
+    width: 100%;
+    padding: 10px;
+  }
+  .fa-sm {
+    font-size: 0.75em;
+  }
+  .conversation {
+    padding: 0 5px;
   }
   .profilePic {
     display: flex;
     align-items: center
   }
   .avatar {
-    max-width: 90px
+    max-width: 60px
   } 
+  .userID {
+    display: none;
+  }
   .conversationInfo {
-    font-size: 16px
+    font-size: 0.75em;
+    padding-left: 10px;
+    width: 200px;
+  }
+  .last-message {
+    margin-block-start: 0;
+  }
+  .dateOrTime {
+    font-size: 0.75em;
+  }
+  .chat {
+    min-height: 350px;
+    /* max-height: 600px; */
   }
   .msg {
     min-width: 0;

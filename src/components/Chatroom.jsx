@@ -1,10 +1,12 @@
 import React from "react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import config from "../config.js"
 import chat from "../lib/chatdata.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faRightToBracket } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faRightToBracket, faFaceSmile } from "@fortawesome/free-solid-svg-icons";
+import { calculateTimeDifference, displayDateOrTime } from "../unixconverter";
+import '@cometchat/uikit-elements'
 
 function useQuery() {
   const { search } = useLocation();
@@ -22,7 +24,14 @@ function Chatroom() {
  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
  const navigate = useNavigate();
+ const emojiKeyboardRef = useRef(null)
+ //  const para = useRef(null)
  const GUID = config.GUID;
+
+ const emojiKeyboardStyle = {
+  height: "250px",
+  display: "none"
+ }
 
  function sendTextMessage(receipient) {
   chat.sendIndividualMessage(receipient, messageText).then(
@@ -74,6 +83,11 @@ function Chatroom() {
 
  function handleChange(event) {
    setMessageText(event.target.value);
+
+   const emojiKeyboard = emojiKeyboardRef.current;
+   emojiKeyboard.addEventListener("cc-emoji-clicked", (e) => {
+    setMessageText(event.target.value + e.detail.id)
+   })
  };
 
  function getUser() {
@@ -113,13 +127,37 @@ function Chatroom() {
  }
 
  function messageListener() {
-   chat.addMessageListener((message, error) => {
+   //const lastMessage = textConversation[textConversation.length - 1]
+   // const receipt = para.current;
+
+   chat.addMessageListener(
+    (message, error) => {
      if (error) return console.log(`error: ${error}`);
      setTextConversation(prevState => [...prevState, message]);
      if (message["sender"]["uid"] !== user["uid"]) { chat.markAsRead(message) }
      scrollToBottom()
-   });
+    }
+    // (msgReceipt, error) => {
+    //  if (error) return console.log(`error: ${error}`);
+    //  receipt.textContent = msgReceipt["receiptType"]
+    //  console.log(msgReceipt)
+    // },
+    // (msgReceipt, error) => {
+    //   if (error) return console.log(`error: ${error}`);
+    //   receipt.textContent = msgReceipt["receiptType"] + displayDateOrTime(msgReceipt["readAt"])
+    //   console.log(msgReceipt)
+    // }
+   );
  };
+
+//  function getReceipts(msgID) {
+//   chat.eventReceipts(msgID)
+//  }
+
+ function displayEmojiKeyboard() {
+  const keyboard = emojiKeyboardRef.current
+  keyboard.classList.toggle("displayed")
+ }
 
  function getConversation() {
   chat.messagesRequest(receiverID, 100)
@@ -130,6 +168,23 @@ function Chatroom() {
       },
       error => console.log("Could not load messages: " + error)
      )
+ }
+
+ function displayReceipt(textMsg) {
+  const paraStyle = {
+    fontWeight: "400", 
+    fontSize: "0.75em",
+    marginBlockStart: "0.5em",
+    marginBlockEnd: "0.5em"
+  }
+
+  if (textMsg["sender"]["uid"] === user["uid"]) {
+    if (textMsg.hasOwnProperty("deliveredAt") && !textMsg.hasOwnProperty("readAt")) {
+      return (<p style={paraStyle}>Delivered</p>)
+    } else if (textMsg.hasOwnProperty("readAt")) {
+      return (<p style={paraStyle}>Read {displayDateOrTime(textMsg["readAt"])}</p>)
+    }
+  }
  }
 
  function backToConversationList() {
@@ -158,6 +213,13 @@ function Chatroom() {
     getConversation()
   }
  }, [receiverID])
+
+//  useEffect(() => {
+//   if (textConversation.length !== 0) {
+//     const lastMessage = textConversation[textConversation.length - 1]
+//     getReceipts(lastMessage["id"])
+//   }
+//  }, [textConversation])
 
  if (!isAuthenticated) {
   return <Navigate to="/" replace />;
@@ -197,6 +259,8 @@ function Chatroom() {
                <div className="msg">
                  <div className="message">{message.text}</div>
                </div>
+               {/* {textConversation.indexOf(message) === textConversation.length - 1 ? (<p ref={para}></p>) : ""} */}
+               {textConversation.indexOf(message) === textConversation.length - 1 ? displayReceipt(message) : ""}
              </li>
            ) : (
              <li className="other">
@@ -208,8 +272,15 @@ function Chatroom() {
          </div>
        ))}
      </ul>
+     <cometchat-emoji-keyboard style={emojiKeyboardStyle} ref={emojiKeyboardRef}></cometchat-emoji-keyboard>
      <div className="chatInputWrapper">
        <form onSubmit={handleSubmit}>
+         <FontAwesomeIcon 
+           icon={faFaceSmile} 
+           size="xl" 
+           style={{ margin: "auto 0.75em", color: "#187dbc" }} 
+           onClick={displayEmojiKeyboard} 
+          />
          <input
            className="textarea input"
            type="text"

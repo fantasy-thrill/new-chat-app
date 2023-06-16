@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import chat from "../lib/chatdata"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faRightToBracket, faCircle } from "@fortawesome/free-solid-svg-icons";
+import { calculateTimeDifference, displayDateOrTime } from "../unixconverter";
 
 function RecentChats() {
  const [user, setUser] = useState({});
@@ -19,9 +20,11 @@ function RecentChats() {
   marginLeft: "10px"
  }
 
- const emptyMsgStyle = {
-  textAlign: "center",
-  opacity: 0.7
+ const unreadMsgStyle = {
+  fontWeight: "bold", 
+  opacity: 1, 
+  display: "inline-block",
+  marginBlockStart: 0
  }
 
  function recentConversations() {
@@ -29,8 +32,13 @@ function RecentChats() {
     .fetchNext()
     .then(
      conversationList => {
-       setConversations(conversationList)
+       if (conversationList.length === 0) {
+        const messageList = document.querySelector("#messageList")
+        messageList.innerHTML = "<h2 style=\"text-align: center; opacity: 0.7;\">No conversations to display.</h2>"
+       } else {
+        setConversations(conversationList)
        console.log("Conversations list received:", conversationList);
+       }
      }, error => {
        console.log("Conversations list fetching failed with error:", error);
      }
@@ -123,12 +131,13 @@ function RecentChats() {
        </button>
      </div>
      <div id="messageList">
-       {conversations.length === 0 ? (<h2 style={emptyMsgStyle}>No conversations to display.</h2>) 
-       : conversations.map(convo => {
+       {conversations.map(convo => {
         const receiverID = convo["conversationWith"]["uid"]
         const receiverName = convo["conversationWith"]["name"]
         const senderID = convo["lastMessage"]["sender"]["uid"]
         const messageText = convo["lastMessage"]["text"]
+
+        const sentTime = convo["lastMessage"]["sentAt"]
         
         return (
          <div 
@@ -139,7 +148,7 @@ function RecentChats() {
              <img src={convo["conversationWith"]["avatar"]} alt={receiverID} className="avatar" />
            </div>
            <div className="conversationInfo">
-             <h3>
+             <h3 className="receiver">
              {receiverName}
              <span className="userID">{receiverID}</span>
              </h3>
@@ -147,12 +156,17 @@ function RecentChats() {
                <p className="last-message">You: {messageText}</p>
              ) : senderID !== user["uid"] && !convo["lastMessage"].hasOwnProperty("readAt") ? (
               <>
-               <FontAwesomeIcon icon={faCircle} size="sm" style={{ color: "#1c5bca" }} className="icon-spacing" />
-               <p className="last-message" style={{ fontWeight: "bold", opacity: 1, display: "inline" }}>{messageText}</p>
+               <p className="last-message" style={unreadMsgStyle}>
+                <FontAwesomeIcon icon={faCircle} size="sm" style={{ color: "#1c5bca" }} className="icon-spacing" />
+                {messageText}
+                </p>
               </>
               ) : (
               <p className="last-message">{messageText}</p>
               )}
+           </div>
+           <div className="dateOrTime">
+            {displayDateOrTime(sentTime)}
            </div>
          </div>
          )
