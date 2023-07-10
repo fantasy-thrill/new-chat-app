@@ -182,7 +182,7 @@ body {
   max-width: 600px;
 }
 .last-message {
-  opacity: 0.5;
+  color: #837f7f;
 }
 .dateOrTime {
   margin: 10px 0 0 auto;

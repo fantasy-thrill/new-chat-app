@@ -1,9 +1,9 @@
 import React from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import chat from "../lib/chatdata"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faRightToBracket, faCircle } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faRightToBracket, faCircle } from "@fortawesome/free-solid-svg-icons";
 import { calculateTimeDifference, displayDateOrTime } from "../unixconverter";
 
 function RecentChats() {
@@ -12,6 +12,7 @@ function RecentChats() {
  const [conversations, setConversations] = useState([])
 
  const navigate = useNavigate()
+ const lastMessagePara = useRef(null)
 
  const userNameStyle = {
   display: "inline",
@@ -71,6 +72,21 @@ function RecentChats() {
   navigate("/chat")
  }
 
+//  function messageListener() {
+//  const lastMessage = lastMessagePara.current
+//   chat.addMessageListener((message, error) => {
+//     if (error) return console.log(`error: ${error}`);
+//     conversations.map((convo) => {
+//       if (message["conversationId"] === convo["conversationId"]) {
+//         convo["lastMessage"] = message
+//         chat.markAsDelivered(convo["lastMessage"])
+        
+//         lastMessage.textContent = message["text"]
+//       }
+//     })
+//   })
+//  }
+
  function goToChat(receiver) {
   navigate(`/chat?receipient=${receiver}`)
   chat.messagesRequest(receiver, 30)
@@ -95,18 +111,18 @@ function RecentChats() {
  useEffect(() => {
   if (user !== null) {
     recentConversations()
+    messagesDelivered()
   }
  }, [user])
 
  useEffect(() => {
-  messagesDelivered()
+  // messageListener()
   const messageList = document.querySelector("#messageList")
   if (conversations.length === 0) {
     messageList.style.borderBottom = "none"
   } else {
     messageList.style.borderBottom = "1px solid black"
   }
-  console.log(conversations)
  }, [conversations])
 
 
@@ -126,7 +142,7 @@ function RecentChats() {
       <div id="header">
        <h1>Recent Conversations</h1>
        <button id="new-msg-btn" onClick={newChat}>
-         <FontAwesomeIcon icon={faPlus} size="lg" className="icon-spacing"/>
+         <FontAwesomeIcon icon={faPenToSquare} size="lg" className="icon-spacing"/>
          <span>New Message</span>
        </button>
      </div>
@@ -156,13 +172,13 @@ function RecentChats() {
                <p className="last-message">You: {messageText}</p>
              ) : senderID !== user["uid"] && !convo["lastMessage"].hasOwnProperty("readAt") ? (
               <>
-               <p className="last-message" style={unreadMsgStyle}>
+               <p className="last-message" style={unreadMsgStyle} ref={lastMessagePara}>
                 <FontAwesomeIcon icon={faCircle} size="sm" style={{ color: "#1c5bca" }} className="icon-spacing" />
                 {messageText}
                 </p>
               </>
               ) : (
-              <p className="last-message">{messageText}</p>
+              <p className="last-message" ref={lastMessagePara}>{messageText}</p>
               )}
            </div>
            <div className="dateOrTime">

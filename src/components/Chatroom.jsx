@@ -25,7 +25,7 @@ function Chatroom() {
 
  const navigate = useNavigate();
  const emojiKeyboardRef = useRef(null)
- //  const para = useRef(null)
+ const para = useRef(null)
  const GUID = config.GUID;
 
  const emojiKeyboardStyle = {
@@ -83,7 +83,6 @@ function Chatroom() {
 
  function handleChange(event) {
    setMessageText(event.target.value);
-
    const emojiKeyboard = emojiKeyboardRef.current;
    emojiKeyboard.addEventListener("cc-emoji-clicked", (e) => {
     setMessageText(event.target.value + e.detail.id)
@@ -126,33 +125,36 @@ function Chatroom() {
    )
  }
 
- function messageListener() {
-   //const lastMessage = textConversation[textConversation.length - 1]
-   // const receipt = para.current;
+ function handleActivityReceived(msgReceipt, error) {
+  if (error) return console.log(`error: ${error}`);
+  para.current.textContent = msgReceipt["receiptType"];
+  console.log(msgReceipt);
+ }
 
-   chat.addMessageListener(
-    (message, error) => {
-     if (error) return console.log(`error: ${error}`);
-     setTextConversation(prevState => [...prevState, message]);
-     if (message["sender"]["uid"] !== user["uid"]) { chat.markAsRead(message) }
-     scrollToBottom()
+ function handleActivityRead(msgReceipt, error) {
+  if (error) return console.log(`error: ${error}`);
+  para.current.textContent = msgReceipt["receiptType"] + displayDateOrTime(msgReceipt["readAt"]);
+  console.log(msgReceipt);
+ }
+
+ function handleChatActivity(message, error) {
+  if (error) return console.log(`error: ${error}`);
+    setTextConversation(prevState => [...prevState, message]);
+    if (message["sender"]["uid"] !== user["uid"]) {
+     chat.markAsDelivered(message)
+     chat.markAsRead(message)
     }
-    // (msgReceipt, error) => {
-    //  if (error) return console.log(`error: ${error}`);
-    //  receipt.textContent = msgReceipt["receiptType"]
-    //  console.log(msgReceipt)
-    // },
-    // (msgReceipt, error) => {
-    //   if (error) return console.log(`error: ${error}`);
-    //   receipt.textContent = msgReceipt["receiptType"] + displayDateOrTime(msgReceipt["readAt"])
-    //   console.log(msgReceipt)
-    // }
-   );
+    console.log("Message received: " + message)
+    scrollToBottom()
+ }
+
+ function messageListener() {
+  chat.addMessageListener(handleChatActivity);
  };
 
-//  function getReceipts(msgID) {
-//   chat.eventReceipts(msgID)
-//  }
+ function activityListener() {
+  chat.addActivityListener(handleActivityReceived, handleActivityRead)
+ }
 
  function displayEmojiKeyboard() {
   const keyboard = emojiKeyboardRef.current
@@ -170,23 +172,6 @@ function Chatroom() {
      )
  }
 
- function displayReceipt(textMsg) {
-  const paraStyle = {
-    fontWeight: "400", 
-    fontSize: "0.75em",
-    marginBlockStart: "0.5em",
-    marginBlockEnd: "0.5em"
-  }
-
-  if (textMsg["sender"]["uid"] === user["uid"]) {
-    if (textMsg.hasOwnProperty("deliveredAt") && !textMsg.hasOwnProperty("readAt")) {
-      return (<p style={paraStyle}>Delivered</p>)
-    } else if (textMsg.hasOwnProperty("readAt")) {
-      return (<p style={paraStyle}>Read {displayDateOrTime(textMsg["readAt"])}</p>)
-    }
-  }
- }
-
  function backToConversationList() {
   navigate("/recentmsgs")
  }
@@ -198,13 +183,14 @@ function Chatroom() {
  
  useEffect(() => {
    getUser();
-   messageListener();
    // chat.joinGroup(GUID)
  }, []);
 
  useEffect(() => {
   if (user !== null) {
     getGroupList()
+    messageListener();
+    activityListener();
   }
  }, [user])
 
@@ -213,13 +199,6 @@ function Chatroom() {
     getConversation()
   }
  }, [receiverID])
-
-//  useEffect(() => {
-//   if (textConversation.length !== 0) {
-//     const lastMessage = textConversation[textConversation.length - 1]
-//     getReceipts(lastMessage["id"])
-//   }
-//  }, [textConversation])
 
  if (!isAuthenticated) {
   return <Navigate to="/" replace />;
@@ -259,8 +238,8 @@ function Chatroom() {
                <div className="msg">
                  <div className="message">{message.text}</div>
                </div>
-               {/* {textConversation.indexOf(message) === textConversation.length - 1 ? (<p ref={para}></p>) : ""} */}
-               {textConversation.indexOf(message) === textConversation.length - 1 ? displayReceipt(message) : ""}
+               {textConversation.indexOf(message) === textConversation.length - 1 ? (<p ref={para}></p>) : ""}
+               {/* {textConversation.indexOf(message) === textConversation.length - 1 ? displayReceipt(message) : ""} */}
              </li>
            ) : (
              <li className="other">

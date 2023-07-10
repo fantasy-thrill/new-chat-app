@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@cometchat-pro/chat": "^3.0.11",
+    "@cometchat-pro/chat": "^3.0.12",
     "@cometchat/chat-uikit-react": "^4.0.0-beta.1.5",
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-regular-svg-icons": "^6.4.0",

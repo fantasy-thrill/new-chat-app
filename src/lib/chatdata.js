@@ -3,6 +3,7 @@ import config from "../config";
 
 export default class CCManager {
   static LISTENER_KEY_MESSAGE = "msglistener";
+  static LISTENER_KEY_ACTIVITY = "actvylistener";
   static appID = config.appID;
   static apiKey = config.apiKey;
   static LISTENER_KEY_GROUP = "grouplistener";
@@ -69,21 +70,28 @@ export default class CCManager {
   static getGroupMembers(GUID) {
     return new CometChat.GroupMembersRequestBuilder(GUID).setLimit(100).build()
   }
-  static addMessageListener(firstCallback) {
+  static addMessageListener(callback) {
     CometChat.addMessageListener(
       this.LISTENER_KEY_MESSAGE,
       new CometChat.MessageListener({
         onTextMessageReceived: textMessage => {
-          firstCallback(textMessage);
+          callback(textMessage);
         }
-        // onMessagesDelivered: messageReceipt => {
-        //   secondCallback(messageReceipt)
-        // },
-        // onMessagesRead: messageReceipt => {
-        //   thirdCallback(messageReceipt)
-        // }
       })
     );
+  }
+  static addActivityListener(firstCallback, secondCallback) {
+    CometChat.addMessageListener(
+      this.LISTENER_KEY_ACTIVITY,
+      new CometChat.MessageListener({
+        onMessagesDelivered: messageReceipt => {
+           firstCallback(messageReceipt)
+         },
+         onMessagesRead: messageReceipt => {
+           secondCallback(messageReceipt)
+         }
+      })
+    )
   }
   static eventReceipts(messageID) {
     CometChat.getMessageReceipts(messageID)
