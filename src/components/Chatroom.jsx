@@ -133,7 +133,14 @@ function Chatroom() {
 
  function handleActivityRead(msgReceipt, error) {
   if (error) return console.log(`error: ${error}`);
-  para.current.textContent = msgReceipt["receiptType"] + displayDateOrTime(msgReceipt["readAt"]);
+  const firstLetterUpperCase = (str) => {
+    const firstLetter = str[0]
+    const capitalLetter = firstLetter.toUpperCase()
+    const capitalized = str.replace(firstLetter, capitalLetter)
+    return capitalized
+  }
+  para.current.style.fontSize = "0.75em"
+  para.current.textContent = `${firstLetterUpperCase(msgReceipt["receiptType"])}  ${displayDateOrTime(msgReceipt["readAt"])}`;
   console.log(msgReceipt);
  }
 
@@ -155,6 +162,14 @@ function Chatroom() {
  function activityListener() {
   chat.addActivityListener(handleActivityReceived, handleActivityRead)
  }
+ 
+ function displayReceipt() {
+  const lastMessage = textConversation[textConversation.length - 1]
+  if (lastMessage["sender"]["uid"] === user["uid"] && lastMessage.hasOwnProperty("readAt")) {
+    para.current.textContent = "Read " + displayDateOrTime(lastMessage["readAt"])
+    para.current.style.fontSize = "0.75em"
+  }
+ }
 
  function displayEmojiKeyboard() {
   const keyboard = emojiKeyboardRef.current
@@ -174,6 +189,7 @@ function Chatroom() {
 
  function backToConversationList() {
   navigate("/recentmsgs")
+  chat.removeListener("msglistener", "actvylistener")
  }
 
  function logout() {
@@ -193,6 +209,12 @@ function Chatroom() {
     activityListener();
   }
  }, [user])
+
+ useEffect(() => {
+  if (textConversation.length > 0) {
+    displayReceipt()
+  }
+ }, [textConversation])
 
  useEffect(() => {
   if (receiverID !== "") {

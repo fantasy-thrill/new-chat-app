@@ -93,6 +93,9 @@ export default class CCManager {
       })
     )
   }
+  static removeListener(listenerIDOne, listenerIDTwo) {
+    CometChat.removeMessageListener(listenerIDOne, listenerIDTwo)
+  }
   static eventReceipts(messageID) {
     CometChat.getMessageReceipts(messageID)
       .then(
