@@ -133,14 +133,8 @@ function Chatroom() {
 
  function handleActivityRead(msgReceipt, error) {
   if (error) return console.log(`error: ${error}`);
-  const firstLetterUpperCase = (str) => {
-    const firstLetter = str[0]
-    const capitalLetter = firstLetter.toUpperCase()
-    const capitalized = str.replace(firstLetter, capitalLetter)
-    return capitalized
-  }
   para.current.style.fontSize = "0.75em"
-  para.current.textContent = `${firstLetterUpperCase(msgReceipt["receiptType"])}  ${displayDateOrTime(msgReceipt["readAt"])}`;
+  para.current.textContent = `Read ${displayDateOrTime(msgReceipt["readAt"])}`;
   console.log(msgReceipt);
  }
 
@@ -273,8 +267,8 @@ function Chatroom() {
          </div>
        ))}
      </ul>
-     <cometchat-emoji-keyboard style={emojiKeyboardStyle} ref={emojiKeyboardRef}></cometchat-emoji-keyboard>
      <div className="chatInputWrapper">
+       <cometchat-emoji-keyboard style={emojiKeyboardStyle} ref={emojiKeyboardRef}></cometchat-emoji-keyboard>
        <form onSubmit={handleSubmit}>
          <FontAwesomeIcon 
            icon={faFaceSmile} 
