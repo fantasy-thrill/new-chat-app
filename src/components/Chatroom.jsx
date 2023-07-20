@@ -52,6 +52,7 @@ function Chatroom() {
   )
  }
 
+ // Unused function
  function sendMessageToGroup() {
    chat.sendGroupMessage(GUID, messageText).then(
      message => {
@@ -71,8 +72,8 @@ function Chatroom() {
  };
 
  function scrollToBottom() {
-   const chat = document.getElementById("chatList");
-   chat.scrollTop = chat.scrollHeight;
+   const chatList = document.getElementById("chatList");
+   chatList.scrollTop = chatList.scrollHeight;
  };
 
  function handleSubmit(event) {
@@ -127,7 +128,8 @@ function Chatroom() {
 
  function handleActivityReceived(msgReceipt, error) {
   if (error) return console.log(`error: ${error}`);
-  para.current.textContent = msgReceipt["receiptType"];
+  para.current.style.fontSize = "0.75em"
+  para.current.textContent = "Delivered";
   console.log(msgReceipt);
  }
 
@@ -140,13 +142,13 @@ function Chatroom() {
 
  function handleChatActivity(message, error) {
   if (error) return console.log(`error: ${error}`);
-    setTextConversation(prevState => [...prevState, message]);
-    if (message["sender"]["uid"] !== user["uid"]) {
-     chat.markAsDelivered(message)
-     chat.markAsRead(message)
-    }
-    console.log("Message received: " + message)
-    scrollToBottom()
+  setTextConversation(prevState => [...prevState, message]);
+  if (message["sender"]["uid"] !== user["uid"]) {
+    chat.markAsDelivered(message)
+    chat.markAsRead(message)
+  }
+  console.log("Message received: " + message)
+  scrollToBottom()
  }
 
  function messageListener() {
@@ -156,7 +158,7 @@ function Chatroom() {
  function activityListener() {
   chat.addActivityListener(handleActivityReceived, handleActivityRead)
  }
- 
+
  function displayReceipt() {
   const lastMessage = textConversation[textConversation.length - 1]
   if (lastMessage["sender"]["uid"] === user["uid"] && lastMessage.hasOwnProperty("readAt")) {
@@ -183,11 +185,12 @@ function Chatroom() {
 
  function backToConversationList() {
   navigate("/recentmsgs")
-  chat.removeListener("msglistener", "actvylistener")
+  chat.removeListener(chat.LISTENER_KEY_MESSAGE, chat.LISTENER_KEY_ACTIVITY)
  }
 
  function logout() {
   chat.logout()
+  chat.removeListener(chat.LISTENER_KEY_MESSAGE, chat.LISTENER_KEY_ACTIVITY, chat.LISTENER_KEY_CONVERSATION)
   navigate("/login")
  }
  

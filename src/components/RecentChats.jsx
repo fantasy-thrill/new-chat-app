@@ -37,7 +37,12 @@ function RecentChats() {
         const messageList = document.querySelector("#messageList")
         messageList.innerHTML = "<h2 style=\"text-align: center; opacity: 0.7;\">No conversations to display.</h2>"
        } else {
-        setConversations(conversationList)
+       setConversations(conversationList)
+       conversationList.forEach(convo => {
+        if (!convo["lastMessage"].hasOwnProperty("deliveredAt")) {
+          chat.markAsDelivered(convo["lastMessage"])
+        }
+       })
        console.log("Conversations list received:", conversationList);
        }
      }, error => {
@@ -60,36 +65,24 @@ function RecentChats() {
     });
  };
 
- function messagesDelivered() {
-  conversations.map(convo => {
-    if (convo["lastMessage"]["sender"]["uid"] !== user["uid"] && !convo["lastMessage"].hasOwnProperty("deliveredAt")) {
-      chat.markAsDelivered(convo["lastMessage"])
-    }
-  })
- }
-
  function newChat() {
   navigate("/chat")
+  chat.removeListener(chat.LISTENER_KEY_CONVERSATION)
+ }
+ 
+ function updateConvoList(message, error) {
+  if (error) return console.log(`Error: ${error}`);
+  recentConversations()
  }
 
-//  function messageListener() {
-//  const lastMessage = lastMessagePara.current
-//   chat.addMessageListener((message, error) => {
-//     if (error) return console.log(`error: ${error}`);
-//     conversations.map((convo) => {
-//       if (message["conversationId"] === convo["conversationId"]) {
-//         convo["lastMessage"] = message
-//         chat.markAsDelivered(convo["lastMessage"])
-        
-//         lastMessage.textContent = message["text"]
-//       }
-//     })
-//   })
-//  }
+ function messageListener() {
+  chat.addConvoUpdateListener(updateConvoList)
+ }
 
  function goToChat(receiver) {
   navigate(`/chat?receipient=${receiver}`)
-  chat.messagesRequest(receiver, 30)
+  chat.removeListener(chat.LISTENER_KEY_CONVERSATION)
+  chat.messagesRequest(receiver, 100)
    .then(
     messages => {
       const lastMessage = messages[messages.length - 1]
@@ -101,6 +94,7 @@ function RecentChats() {
 
  function logout() {
   chat.logout()
+  chat.removeListener(chat.LISTENER_KEY_MESSAGE, chat.LISTENER_KEY_ACTIVITY, chat.LISTENER_KEY_CONVERSATION)
   navigate("/login")
  }
 
@@ -111,16 +105,15 @@ function RecentChats() {
  useEffect(() => {
   if (user !== null) {
     recentConversations()
-    messagesDelivered()
   }
  }, [user])
 
  useEffect(() => {
-  // messageListener()
   const messageList = document.querySelector("#messageList")
   if (conversations.length === 0) {
     messageList.style.borderBottom = "none"
   } else {
+    messageListener()
     messageList.style.borderBottom = "1px solid black"
   }
  }, [conversations])

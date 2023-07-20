@@ -4,6 +4,7 @@ import config from "../config";
 export default class CCManager {
   static LISTENER_KEY_MESSAGE = "msglistener";
   static LISTENER_KEY_ACTIVITY = "actvylistener";
+  static LISTENER_KEY_CONVERSATION = "convolistener";
   static appID = config.appID;
   static apiKey = config.apiKey;
   static LISTENER_KEY_GROUP = "grouplistener";
@@ -70,6 +71,16 @@ export default class CCManager {
   static getGroupMembers(GUID) {
     return new CometChat.GroupMembersRequestBuilder(GUID).setLimit(100).build()
   }
+  static addConvoUpdateListener(callback) {
+    CometChat.addMessageListener(
+      this.LISTENER_KEY_CONVERSATION,
+      new CometChat.MessageListener({
+        onTextMessageReceived: textMessage => {
+          callback(textMessage);
+        }
+      })
+    );
+  }
   static addMessageListener(callback) {
     CometChat.addMessageListener(
       this.LISTENER_KEY_MESSAGE,
@@ -93,8 +104,11 @@ export default class CCManager {
       })
     )
   }
-  static removeListener(listenerIDOne, listenerIDTwo) {
-    CometChat.removeMessageListener(listenerIDOne, listenerIDTwo)
+  static removeListener() {
+    const listenerIDs = [...arguments]
+    listenerIDs.forEach(listener => {
+      CometChat.removeMessageListener(listener)
+    })
   }
   static eventReceipts(messageID) {
     CometChat.getMessageReceipts(messageID)
