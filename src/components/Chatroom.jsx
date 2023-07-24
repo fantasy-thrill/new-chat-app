@@ -5,7 +5,7 @@ import config from "../config.js"
 import chat from "../lib/chatdata.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faRightToBracket, faFaceSmile } from "@fortawesome/free-solid-svg-icons";
-import { calculateTimeDifference, displayDateOrTime } from "../unixconverter";
+import { calculateTimeDifference, displayDateOrTime, darkenBackground, lightenBackground } from "../smalleffects.js";
 import '@cometchat/uikit-elements'
 
 function useQuery() {
@@ -22,6 +22,9 @@ function Chatroom() {
  const [memberList, setMemberList] = useState([])
  const [user, setUser] = useState(null);
  const [isAuthenticated, setIsAuthenticated] = useState(true);
+ const [contextMenuDisplay, setContextMenuDisplay] = useState("none");
+ const [menuCoordinates, setMenuCoordinates] = useState({ x: 0, y: 0 });
+
 
  const navigate = useNavigate();
  const emojiKeyboardRef = useRef(null)
@@ -31,6 +34,17 @@ function Chatroom() {
  const emojiKeyboardStyle = {
   height: "250px",
   display: "none"
+ }
+
+ const contextMenuStyle = {
+  display: contextMenuDisplay,
+  backgroundColor: "white",
+  border: "1px solid gray",
+  position: "absolute",
+  padding: "10px",
+  zIndex: 100,
+  top: `${menuCoordinates.y}px`,
+  left: `${menuCoordinates.x}px`
  }
 
  function sendTextMessage(receipient) {
@@ -172,6 +186,33 @@ function Chatroom() {
   keyboard.classList.toggle("displayed")
  }
 
+ function displayContextMenu(event) {
+  const parentElement = event.target.closest(".msg")
+
+  if (parentElement) {
+    event.preventDefault()
+    const { clientX, clientY } = event
+    darkenBackground(parentElement)
+    parentElement.classList.add("selected")
+
+    setMenuCoordinates({ x: clientX, y: clientY })
+    setContextMenuDisplay("block")
+    console.log(getComputedStyle(parentElement).backgroundColor)
+  }
+ }
+
+ function removeContextMenu(event) {
+  const messages = document.querySelectorAll(".msg")
+  for (const message of messages) {
+    if (message.classList.contains("selected")) {
+      lightenBackground(message)
+      message.classList.remove("selected")
+      console.log(getComputedStyle(message).backgroundColor)
+    }
+  }
+  setContextMenuDisplay("none")
+ }
+
  function getConversation() {
   chat.messagesRequest(receiverID, 100)
      .then(
@@ -224,7 +265,7 @@ function Chatroom() {
 }
 
  return (
-  <>
+  <div id="page" onClick={removeContextMenu}>
    <div className="navigation-chat">
     <button className="nav-btn" onClick={backToConversationList}>
       <FontAwesomeIcon icon={faArrowLeft} size="lg" className="icon-spacing" />
@@ -254,7 +295,7 @@ function Chatroom() {
          <div key={message.id}>
            {user.uid === message.sender.uid ? (
              <li className="self">
-               <div className="msg">
+               <div className="msg" onContextMenu={displayContextMenu}>
                  <div className="message">{message.text}</div>
                </div>
                {textConversation.indexOf(message) === textConversation.length - 1 ? (<p ref={para}></p>) : ""}
@@ -262,11 +303,11 @@ function Chatroom() {
              </li>
            ) : (
              <li className="other">
-               <div className="msg">
+               <div className="msg" onContextMenu={displayContextMenu}>
                  <div className="message">{message.text}</div>
                </div>
              </li>
-           )}
+           )}          
          </div>
        ))}
      </ul>
@@ -290,7 +331,13 @@ function Chatroom() {
        </form>
      </div>
    </div>
-  </>
+   {contextMenuDisplay === "block" && (
+    <div id="context-menu" style={contextMenuStyle}>
+      <div className="menu-choice">Delete message</div>
+      <div className="menu-choice">Delete multiple</div>
+    </div>
+    )}
+  </div>
  );
 };
 

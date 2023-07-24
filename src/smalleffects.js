@@ -32,3 +32,19 @@ export function displayDateOrTime(timestamp) {
      return messageDay
   }
 }
+
+export function darkenBackground(element) {
+  const currentBackgroundColor = getComputedStyle(element).backgroundColor;
+  const rgb = currentBackgroundColor.match(/\d+/g);
+  const darkenedRGB = rgb.map(value => Math.max(value - 50, 0));
+  const darkenedColor = `rgb(${darkenedRGB.join(', ')})`;
+  element.style.backgroundColor = darkenedColor;
+}
+
+export function lightenBackground(element) {
+  const currentBackgroundColor = getComputedStyle(element).backgroundColor;
+  const rgb = currentBackgroundColor.match(/\d+/g);
+  const lightenedRGB = rgb.map(value => Math.min(parseInt(value) + 50, 255));
+  const lightenedColor = `rgb(${lightenedRGB.join(', ')})`;
+  element.style.backgroundColor = lightenedColor;
+}

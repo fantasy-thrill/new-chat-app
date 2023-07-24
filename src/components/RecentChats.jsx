@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import chat from "../lib/chatdata"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faRightToBracket, faCircle } from "@fortawesome/free-solid-svg-icons";
-import { calculateTimeDifference, displayDateOrTime } from "../unixconverter";
+import { calculateTimeDifference, displayDateOrTime } from "../smalleffects";
 
 function RecentChats() {
  const [user, setUser] = useState({});
@@ -120,7 +120,7 @@ function RecentChats() {
 
 
  return (
-  <>
+  <div id="page">
     <div className="navigation-recent">
      <div className="userInfo">
       <img src={user["avatar"]} alt="" style={{ width: "30px" }} />
@@ -184,7 +184,7 @@ function RecentChats() {
       }
      </div>
    </div>
-  </>
+  </div>
  )
 }
 
