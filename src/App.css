@@ -341,6 +341,15 @@ body {
 .displayed {
   display: block !important;
 }
+.menu-choice {
+  padding: 5px 10px;
+  border-bottom: 1px solid #808080;
+}
+.menu-choice:hover {
+  background-color: #187dbc;
+  color: #ffffff;
+  cursor: pointer;
+}
 @media screen and (max-width: 800px) {
   .msg img {
     width: 300px;

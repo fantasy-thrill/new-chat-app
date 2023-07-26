@@ -143,6 +143,13 @@ export default class CCManager {
       }
      )
   }
+  static deleteMessage(messageID) {
+    CometChat.deleteMessage(messageID)
+      .then(
+        message => console.log("Message deleted: " + message),
+        error => console.log("Error: Message not deleted: " + error)
+      )
+  }
   static logout() {
     CometChat.logout()
       .then(() => { console.log("Logout successful") })

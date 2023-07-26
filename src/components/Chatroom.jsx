@@ -24,6 +24,7 @@ function Chatroom() {
  const [isAuthenticated, setIsAuthenticated] = useState(true);
  const [contextMenuDisplay, setContextMenuDisplay] = useState("none");
  const [menuCoordinates, setMenuCoordinates] = useState({ x: 0, y: 0 });
+ const [selected, setSelected] = useState("")
 
 
  const navigate = useNavigate();
@@ -41,7 +42,6 @@ function Chatroom() {
   backgroundColor: "white",
   border: "1px solid gray",
   position: "absolute",
-  padding: "10px",
   zIndex: 100,
   top: `${menuCoordinates.y}px`,
   left: `${menuCoordinates.x}px`
@@ -186,8 +186,10 @@ function Chatroom() {
   keyboard.classList.toggle("displayed")
  }
 
- function displayContextMenu(event) {
+ function displayContextMenu(event, messageID) {
   const parentElement = event.target.closest(".msg")
+  // const messageDiv = document.getElementById(messageID)
+  setSelected(messageID)
 
   if (parentElement) {
     event.preventDefault()
@@ -197,7 +199,6 @@ function Chatroom() {
 
     setMenuCoordinates({ x: clientX, y: clientY })
     setContextMenuDisplay("block")
-    console.log(getComputedStyle(parentElement).backgroundColor)
   }
  }
 
@@ -207,10 +208,14 @@ function Chatroom() {
     if (message.classList.contains("selected")) {
       lightenBackground(message)
       message.classList.remove("selected")
-      console.log(getComputedStyle(message).backgroundColor)
     }
   }
   setContextMenuDisplay("none")
+  setSelected("")
+ }
+
+ function deleteMessage() {
+   // Code for function will be set up later...
  }
 
  function getConversation() {
@@ -260,6 +265,8 @@ function Chatroom() {
   }
  }, [receiverID])
 
+ // useEffect(() => {console.log(selected)}, [selected])
+
  if (!isAuthenticated) {
   return <Navigate to="/" replace />;
 }
@@ -292,10 +299,10 @@ function Chatroom() {
     </div>
      <ul className="chat" id="chatList">
        {textConversation.map(message => (
-         <div key={message.id}>
+         <div key={message.id} id={message.id}>
            {user.uid === message.sender.uid ? (
              <li className="self">
-               <div className="msg" onContextMenu={displayContextMenu}>
+               <div className="msg" onContextMenu={(event) => displayContextMenu(event, message.id)}>
                  <div className="message">{message.text}</div>
                </div>
                {textConversation.indexOf(message) === textConversation.length - 1 ? (<p ref={para}></p>) : ""}
@@ -303,7 +310,7 @@ function Chatroom() {
              </li>
            ) : (
              <li className="other">
-               <div className="msg" onContextMenu={displayContextMenu}>
+               <div className="msg" onContextMenu={(event) => displayContextMenu(event, message.id)}>
                  <div className="message">{message.text}</div>
                </div>
              </li>
