@@ -215,7 +215,13 @@ function Chatroom() {
  }
 
  function deleteMessage() {
-   // Code for function will be set up later...
+  const messageToDelete = textConversation.find(message => message["id"] === selected)
+  const updatedConvo = textConversation.toSpliced(textConversation.indexOf(messageToDelete), 1)
+  chat.deleteMessage(selected)
+  
+  // const deletedMsgDiv = document.getElementById(selected)
+  // deletedMsgDiv.remove()
+  setTextConversation(updatedConvo)
  }
 
  function getConversation() {
@@ -340,7 +346,7 @@ function Chatroom() {
    </div>
    {contextMenuDisplay === "block" && (
     <div id="context-menu" style={contextMenuStyle}>
-      <div className="menu-choice">Delete message</div>
+      <div className="menu-choice" onClick={deleteMessage}>Delete message</div>
       <div className="menu-choice">Delete multiple</div>
     </div>
     )}

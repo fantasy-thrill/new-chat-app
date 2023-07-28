@@ -7,6 +7,7 @@ export default class CCManager {
   static LISTENER_KEY_CONVERSATION = "convolistener";
   static appID = config.appID;
   static apiKey = config.apiKey;
+  static authKey = config.authKey;
   static LISTENER_KEY_GROUP = "grouplistener";
   static init() {
     const appSetting = new CometChat.AppSettingsBuilder()
@@ -34,7 +35,7 @@ export default class CCManager {
     return CometChat.getLoggedinUser();
   }
   static login(UID) {
-    return CometChat.login(UID, this.apiKey);
+    return CometChat.login(UID, this.authKey);
   }
   static getGroupMessages(GUID, callback, limit = 30) {
     const messagesRequest = new CometChat.MessagesRequestBuilder()
@@ -43,6 +44,12 @@ export default class CCManager {
       .build();
     callback();
     return messagesRequest.fetchPrevious();
+  }
+  static usersRequest() {
+    const usersRequest = new CometChat.UsersRequestBuilder()
+      .setLimit(10)
+      .build()
+    return usersRequest.fetchNext()
   }
   static messagesRequest(UID, limit) {
     const messagesRequest = new CometChat.MessagesRequestBuilder()
