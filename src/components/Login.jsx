@@ -1,7 +1,8 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import chat from "../lib/chatdata"
+import { authTokens } from "../config";
 import logo from "../logo.svg"
 
 function Login() {
@@ -19,18 +20,28 @@ function Login() {
  };
 
  function login() {
-   toggleIsSubmitting();
-   chat
-     .login(username)
-     .then((user) => {
-       setUser(user);
-       setIsAuthenticated(true);
-     })
-     .catch((error) => {
-       setErrorMessage('Please enter a valid username');
-       toggleIsSubmitting();
-       console.log(error);
-     });
+  toggleIsSubmitting();
+  let authToken = ""
+   
+  for (const userID in authTokens) {
+    if (userID === username) {
+      authToken = authTokens[userID]
+      break;
+    }
+  }
+
+  chat
+    .login(authToken)
+    .then((user) => {
+      setUser(user);
+      setIsAuthenticated(true);
+    })
+    .catch((error) => {
+      setErrorMessage('Please enter a valid username');
+      toggleIsSubmitting();
+      console.log(error);
+      console.log(authToken)
+    });
  };
 
  function toggleIsSubmitting() {

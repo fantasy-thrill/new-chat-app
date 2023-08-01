@@ -34,8 +34,8 @@ export default class CCManager {
   static getLoggedinUser() {
     return CometChat.getLoggedinUser();
   }
-  static login(UID) {
-    return CometChat.login(UID, this.authKey);
+  static login(token) {
+    return CometChat.login(token);
   }
   static getGroupMessages(GUID, callback, limit = 30) {
     const messagesRequest = new CometChat.MessagesRequestBuilder()
