@@ -40,6 +40,7 @@ function Chatroom() {
  const contextMenuStyle = {
   display: contextMenuDisplay,
   backgroundColor: "white",
+  width: "150px",
   border: "1px solid gray",
   position: "absolute",
   zIndex: 100,
@@ -196,8 +197,10 @@ function Chatroom() {
     const { clientX, clientY } = event
     darkenBackground(parentElement)
     parentElement.classList.add("selected")
-
-    setMenuCoordinates({ x: clientX, y: clientY })
+    const spaceOnRight = window.innerWidth - clientX;
+    const spaceOnLeft = clientX - 150;
+  
+    setMenuCoordinates({ x: spaceOnRight < 150 ? spaceOnLeft : clientX, y: clientY })
     setContextMenuDisplay("block")
   }
  }
@@ -228,8 +231,9 @@ function Chatroom() {
   chat.messagesRequest(receiverID, 100)
      .then(
       messages => {
-        setTextConversation(messages)
-        console.log(messages)
+        const cleanList = messages.filter(message => !message.hasOwnProperty("action") && !message.hasOwnProperty("deletedAt"))
+        setTextConversation(cleanList)
+        console.log(cleanList)
       },
       error => console.log("Could not load messages: " + error)
      )

@@ -37,7 +37,18 @@ function RecentChats() {
         const messageList = document.querySelector("#messageList")
         messageList.innerHTML = "<h2 style=\"text-align: center; opacity: 0.7;\">No conversations to display.</h2>"
        } else {
-       setConversations(conversationList)
+       conversationList.forEach(convo => {
+        const receiverID = convo["conversationWith"]["uid"]
+        chat.messagesRequest(receiverID, 100)
+          .then(
+            messages => {
+              const cleanList = messages.filter(message => !message.hasOwnProperty("action") && !message.hasOwnProperty("deletedAt"))
+              convo["lastMessage"] = cleanList[cleanList.length - 1]
+              setConversations(conversationList)
+            },
+            error => console.log("Could not display conversations: " + error)
+          )
+       })
        conversationList.forEach(convo => {
         if (!convo["lastMessage"].hasOwnProperty("deliveredAt")) {
           chat.markAsDelivered(convo["lastMessage"])
