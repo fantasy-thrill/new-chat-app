@@ -117,6 +117,16 @@ export default class CCManager {
       CometChat.removeMessageListener(listener)
     })
   }
+  static typingStarted(receiver, type) {
+    const typingNotification = new CometChat.TypingIndicator(receiver, type)
+    CometChat.startTyping(typingNotification)
+    console.log("I'm typing right now")
+  }
+  static typingStopped(receiver, type) {
+    const typingNotification = new CometChat.TypingIndicator(receiver, type)
+    CometChat.endTyping(typingNotification)
+    console.log("I've stopped typing")
+  }
   static eventReceipts(messageID) {
     CometChat.getMessageReceipts(messageID)
       .then(

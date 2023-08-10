@@ -221,9 +221,6 @@ function Chatroom() {
   const messageToDelete = textConversation.find(message => message["id"] === selected)
   const updatedConvo = textConversation.toSpliced(textConversation.indexOf(messageToDelete), 1)
   chat.deleteMessage(selected)
-  
-  // const deletedMsgDiv = document.getElementById(selected)
-  // deletedMsgDiv.remove()
   setTextConversation(updatedConvo)
  }
 
@@ -274,8 +271,6 @@ function Chatroom() {
     getConversation()
   }
  }, [receiverID])
-
- // useEffect(() => {console.log(selected)}, [selected])
 
  if (!isAuthenticated) {
   return <Navigate to="/" replace />;
@@ -342,7 +337,8 @@ function Chatroom() {
            type="text"
            placeholder="Enter your message..."
            value={messageText}
-           onChange={handleChange}
+           onChange={(event) => { handleChange(event); chat.typingStarted(receiverID, "user") }}
+           onKeyDown={(event) => { event.key === "Backspace" ? chat.typingStopped(receiverID, "user") : "" }}
          />
          <button type="submit" id="sendButton">Send</button>
        </form>
