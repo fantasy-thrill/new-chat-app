@@ -37,24 +37,30 @@ function RecentChats() {
         const messageList = document.querySelector("#messageList")
         messageList.innerHTML = "<h2 style=\"text-align: center; opacity: 0.7;\">No conversations to display.</h2>"
        } else {
-       conversationList.forEach(convo => {
-        const receiverID = convo["conversationWith"]["uid"]
-        chat.messagesRequest(receiverID, 100)
-          .then(
-            messages => {
-              const cleanList = messages.filter(message => !message.hasOwnProperty("action") && !message.hasOwnProperty("deletedAt"))
-              convo["lastMessage"] = cleanList[cleanList.length - 1]
-              setConversations(conversationList)
-            },
-            error => console.log("Could not display conversations: " + error)
-          )
-       })
-       conversationList.forEach(convo => {
-        if (!convo["lastMessage"].hasOwnProperty("deliveredAt")) {
-          chat.markAsDelivered(convo["lastMessage"])
-        }
-       })
-       console.log("Conversations list received:", conversationList);
+        const updatedList = conversationList.map(convo => {
+          const receiverID = convo["conversationWith"]["uid"]
+          return chat.messagesRequest(receiverID, 100)
+            .then(
+              messages => {
+               const cleanList = messages.filter(message => !message.hasOwnProperty("action") && !message.hasOwnProperty("deletedAt"))
+               convo["lastMessage"] = cleanList[cleanList.length - 1]
+              },
+              error => console.log("Could not display conversations: " + error)
+            )
+        })
+        Promise.all(updatedList)
+        .then(
+          () => {
+             conversationList.forEach(convo => {
+              if (!convo["lastMessage"].hasOwnProperty("deliveredAt")) {
+               chat.markAsDelivered(convo["lastMessage"])
+              }
+            })
+            setConversations([...conversationList])
+            console.log("Conversations list received:", conversationList);
+          }, 
+          error => console.log("Error setting up conversations: " + error)
+        )
        }
      }, error => {
        console.log("Conversations list fetching failed with error:", error);
@@ -126,6 +132,7 @@ function RecentChats() {
   } else {
     messageListener()
     messageList.style.borderBottom = "1px solid black"
+    console.log(conversations)
   }
  }, [conversations])
 

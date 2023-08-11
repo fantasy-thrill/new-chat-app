@@ -25,6 +25,7 @@ function Chatroom() {
  const [contextMenuDisplay, setContextMenuDisplay] = useState("none");
  const [menuCoordinates, setMenuCoordinates] = useState({ x: 0, y: 0 });
  const [selected, setSelected] = useState("")
+ const [isTyping, setIsTyping] = useState(false)
 
 
  const navigate = useNavigate();
@@ -104,6 +105,16 @@ function Chatroom() {
     setMessageText(event.target.value + e.detail.id)
    })
  };
+
+ function handleTypingStatus(event) {
+  if (event.key !== "Backspace" && !isTyping) {
+    chat.typingStarted(receiverID, "user")
+    setIsTyping(true)
+  } else if (event.key === "Backspace" && isTyping) {
+    chat.typingStopped(receiverID, "user")
+    setIsTyping(false)
+  }
+ }
 
  function getUser() {
    chat
@@ -189,7 +200,6 @@ function Chatroom() {
 
  function displayContextMenu(event, messageID) {
   const parentElement = event.target.closest(".msg")
-  // const messageDiv = document.getElementById(messageID)
   setSelected(messageID)
 
   if (parentElement) {
@@ -337,8 +347,8 @@ function Chatroom() {
            type="text"
            placeholder="Enter your message..."
            value={messageText}
-           onChange={(event) => { handleChange(event); chat.typingStarted(receiverID, "user") }}
-           onKeyDown={(event) => { event.key === "Backspace" ? chat.typingStopped(receiverID, "user") : "" }}
+           onChange={handleChange}
+           onKeyDown={handleTypingStatus}
          />
          <button type="submit" id="sendButton">Send</button>
        </form>

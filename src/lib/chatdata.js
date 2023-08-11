@@ -145,7 +145,7 @@ export default class CCManager {
         console.log("Message delivered");
       },
       (error) => {
-        console.log("Message not delivered:", error.message);
+        console.log("Message not delivered: " + error);
       }
      )
   }
@@ -156,16 +156,25 @@ export default class CCManager {
         console.log("Message read");
       },
       (error) => {
-        console.log("Message not read:", error.message);
+        console.log("Message not read: " + error);
       }
      )
   }
   static deleteMessage(messageID) {
-    CometChat.deleteMessage(messageID)
-      .then(
-        message => console.log("Message deleted: " + message),
-        error => console.log("Error: Message not deleted: " + error)
-      )
+    const options = {
+      method: 'DELETE',
+      headers: {
+        accept: 'application/json', 
+        'content-type': 'application/json',
+        apikey: this.apiKey
+      },
+      body: JSON.stringify({permanent: true})
+    };
+    
+    fetch(`https://${this.appID}.api-us.cometchat.io/v3/messages/${messageID}`, options)
+      .then(response => response.json())
+      .then(response => console.log("Message deleted: " + response))
+      .catch(error => console.error("Error: Message not deleted: " + error));
   }
   static logout() {
     CometChat.logout()
