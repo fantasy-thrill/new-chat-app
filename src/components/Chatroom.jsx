@@ -23,6 +23,7 @@ function Chatroom() {
  const [user, setUser] = useState(null);
  const [isAuthenticated, setIsAuthenticated] = useState(true);
  const [contextMenuDisplay, setContextMenuDisplay] = useState("none");
+ const [deleteMenuDisplay, setDeleteMenuDisplay] = useState("none")
  const [menuCoordinates, setMenuCoordinates] = useState({ x: 0, y: 0 });
  const [selected, setSelected] = useState("")
  const [isTyping, setIsTyping] = useState(false)
@@ -47,6 +48,20 @@ function Chatroom() {
   zIndex: 100,
   top: `${menuCoordinates.y}px`,
   left: `${menuCoordinates.x}px`
+ }
+
+//  const deleteMenuStyle = {
+//   position: "fixed",
+//   top: "50%",
+//   left: "50%",
+//   transform: "translate(-50%, -50%)",
+//   backgroundColor: "silver",
+//   padding: "20px",
+//   zIndex: 1000
+//  }
+
+ const displayStyle = {
+  display: deleteMenuDisplay
  }
 
  function sendTextMessage(receipient) {
@@ -227,6 +242,10 @@ function Chatroom() {
   setSelected("")
  }
 
+ function displayDeleteMenu(event) {
+
+ }
+
  function deleteMessage() {
   const messageToDelete = textConversation.find(message => message["id"] === selected)
   const updatedConvo = textConversation.toSpliced(textConversation.indexOf(messageToDelete), 1)
@@ -288,6 +307,7 @@ function Chatroom() {
 
  return (
   <div id="page" onClick={removeContextMenu}>
+   <div id="overlay" style={displayStyle}></div>
    <div className="navigation-chat">
     <button className="nav-btn" onClick={backToConversationList}>
       <FontAwesomeIcon icon={faArrowLeft} size="lg" className="icon-spacing" />
@@ -356,9 +376,17 @@ function Chatroom() {
    </div>
    {contextMenuDisplay === "block" && (
     <div id="context-menu" style={contextMenuStyle}>
-      <div className="menu-choice" onClick={deleteMessage}>Delete message</div>
+      <div className="menu-choice" onClick={setDeleteMenuDisplay("block")}>Delete message</div>
       <div className="menu-choice">Delete multiple</div>
     </div>
+    )}
+    {deleteMenuDisplay === "block" && (
+      <div id="delete-menu" style={displayStyle}>
+        Do you want to delete messages only for you or for everyone in the conversation?
+        <div className="d-menu-choice" onClick={{/*function will be added later*/}}>Delete for me</div>
+        <div className="d-menu-choice" onClick={deleteMessage}>Delete for everyone</div>
+        <div className="d-menu-choice" onClick={setDeleteMenuDisplay("none")}>Cancel</div>
+      </div>
     )}
   </div>
  );
