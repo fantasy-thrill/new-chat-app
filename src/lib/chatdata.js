@@ -1,5 +1,6 @@
 import { CometChat } from "@cometchat-pro/chat";
 import config from "../config";
+import { deleteMessages } from "../config";
 
 export default class CCManager {
   static LISTENER_KEY_MESSAGE = "msglistener";
@@ -161,20 +162,19 @@ export default class CCManager {
      )
   }
   static deleteMessage(messageID) {
-    const options = {
-      method: 'DELETE',
-      headers: {
-        accept: 'application/json', 
-        'content-type': 'application/json',
-        apikey: this.apiKey
-      },
-      body: JSON.stringify({permanent: true})
-    };
-    
-    fetch(`https://${this.appID}.api-us.cometchat.io/v3/messages/${messageID}`, options)
-      .then(response => response.json())
-      .then(response => console.log("Message deleted: " + response))
-      .catch(error => console.error("Error: Message not deleted: " + error));
+    CometChat.deleteMessage(messageID)
+    .then(
+      message => console.log("Message deleted: " + message),
+      error => console.log("Error: Message not deleted: " + error)
+    )
+  }
+  static deleteForMe(UID, messageID) {
+    for (const user in deleteMessages) {
+      if (UID === user) {
+        deleteMessages[user].push(messageID)
+        console.log(deleteMessages[user])
+      }
+    }
   }
   static logout() {
     CometChat.logout()

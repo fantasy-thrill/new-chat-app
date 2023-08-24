@@ -365,12 +365,18 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: silver;
-  padding: 20px;
+  width: 300px;
+  text-align: center;
+  padding: 20px 20px 0 20px;
   z-index: 1000;
 }
 .d-menu-choice {
   border-top: 1px solid gray;
   padding: 5px;
+  cursor: pointer;
+}
+.d-menu-choice:first-child {
+  margin-top: 20px;
 }
 @media screen and (max-width: 800px) {
   .msg img {

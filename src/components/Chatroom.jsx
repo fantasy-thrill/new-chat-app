@@ -50,16 +50,6 @@ function Chatroom() {
   left: `${menuCoordinates.x}px`
  }
 
-//  const deleteMenuStyle = {
-//   position: "fixed",
-//   top: "50%",
-//   left: "50%",
-//   transform: "translate(-50%, -50%)",
-//   backgroundColor: "silver",
-//   padding: "20px",
-//   zIndex: 1000
-//  }
-
  const displayStyle = {
   display: deleteMenuDisplay
  }
@@ -242,8 +232,11 @@ function Chatroom() {
   setSelected("")
  }
 
- function displayDeleteMenu(event) {
-
+ function deleteForMe() {
+  const messageToDelete = textConversation.find(message => message["id"] === selected)
+  const updatedConvo = textConversation.toSpliced(textConversation.indexOf(messageToDelete), 1)
+  chat.deleteForMe(user["uid"], selected)
+  setTextConversation(updatedConvo)
  }
 
  function deleteMessage() {
@@ -376,16 +369,23 @@ function Chatroom() {
    </div>
    {contextMenuDisplay === "block" && (
     <div id="context-menu" style={contextMenuStyle}>
-      <div className="menu-choice" onClick={setDeleteMenuDisplay("block")}>Delete message</div>
+      <div className="menu-choice" onClick={() => {
+        const messageToDelete = textConversation.find(message => message["id"] === selected)
+        if (messageToDelete["sender"]["uid"] !== user["uid"]) {
+          deleteForMe();
+        } else {
+          setDeleteMenuDisplay("block");
+        }
+      }}>Delete message</div>
       <div className="menu-choice">Delete multiple</div>
     </div>
     )}
     {deleteMenuDisplay === "block" && (
       <div id="delete-menu" style={displayStyle}>
         Do you want to delete messages only for you or for everyone in the conversation?
-        <div className="d-menu-choice" onClick={{/*function will be added later*/}}>Delete for me</div>
+        <div className="d-menu-choice" onClick={deleteForMe}>Delete for me</div>
         <div className="d-menu-choice" onClick={deleteMessage}>Delete for everyone</div>
-        <div className="d-menu-choice" onClick={setDeleteMenuDisplay("none")}>Cancel</div>
+        <div className="d-menu-choice" onClick={() => setDeleteMenuDisplay("none")}>Cancel</div>
       </div>
     )}
   </div>
