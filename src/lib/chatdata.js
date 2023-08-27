@@ -99,6 +99,15 @@ export default class CCManager {
       })
     );
   }
+  static addTypingListener(receipient) {
+    CometChat.addMessageListener(
+      this.LISTENER_KEY_MESSAGE,
+      new CometChat.MessageListener({
+        onTypingStarted: typingIndicator => `<p>${receipient} is typing...</p>`,
+        onTypingEnded: typingIndicator => ""
+      })
+    );
+  }
   static addActivityListener(firstCallback, secondCallback) {
     CometChat.addMessageListener(
       this.LISTENER_KEY_ACTIVITY,

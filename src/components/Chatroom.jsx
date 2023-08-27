@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
-import config from "../config.js"
+import config, { deleteMessages } from "../config.js"
 import chat from "../lib/chatdata.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faRightToBracket, faFaceSmile } from "@fortawesome/free-solid-svg-icons";
@@ -190,6 +190,10 @@ function Chatroom() {
   chat.addActivityListener(handleActivityReceived, handleActivityRead)
  }
 
+ function typingListener() {
+  chat.addTypingListener(receiverID)
+ }
+
  function displayReceipt() {
   const lastMessage = textConversation[textConversation.length - 1]
   if (lastMessage["sender"]["uid"] === user["uid"] && lastMessage.hasOwnProperty("readAt")) {
@@ -250,7 +254,11 @@ function Chatroom() {
   chat.messagesRequest(receiverID, 100)
      .then(
       messages => {
-        const cleanList = messages.filter(message => !message.hasOwnProperty("action") && !message.hasOwnProperty("deletedAt"))
+        const cleanList = messages.filter(message => 
+          !message.hasOwnProperty("action") && 
+          !message.hasOwnProperty("deletedAt") &&
+          !deleteMessages[user["uid"]].includes(message["id"])
+        )
         setTextConversation(cleanList)
         console.log(cleanList)
       },
@@ -289,10 +297,10 @@ function Chatroom() {
  }, [textConversation])
 
  useEffect(() => {
-  if (receiverID !== "") {
+  if (user !== null && receiverID !== "") {
     getConversation()
   }
- }, [receiverID])
+ }, [user, receiverID])
 
  if (!isAuthenticated) {
   return <Navigate to="/" replace />;
@@ -334,7 +342,6 @@ function Chatroom() {
                  <div className="message">{message.text}</div>
                </div>
                {textConversation.indexOf(message) === textConversation.length - 1 ? (<p ref={para}></p>) : ""}
-               {/* {textConversation.indexOf(message) === textConversation.length - 1 ? displayReceipt(message) : ""} */}
              </li>
            ) : (
              <li className="other">
@@ -346,6 +353,7 @@ function Chatroom() {
          </div>
        ))}
      </ul>
+     {typingListener}
      <div className="chatInputWrapper">
        <cometchat-emoji-keyboard style={emojiKeyboardStyle} ref={emojiKeyboardRef}></cometchat-emoji-keyboard>
        <form onSubmit={handleSubmit}>
