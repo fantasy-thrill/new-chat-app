@@ -27,6 +27,7 @@ function Chatroom() {
  const [menuCoordinates, setMenuCoordinates] = useState({ x: 0, y: 0 });
  const [selected, setSelected] = useState("")
  const [isTyping, setIsTyping] = useState(false)
+ const [recTyping, setRecTyping] = useState(false)
 
 
  const navigate = useNavigate();
@@ -191,7 +192,7 @@ function Chatroom() {
  }
 
  function typingListener() {
-  chat.addTypingListener(receiverID)
+  chat.addTypingListener(setRecTyping)
  }
 
  function displayReceipt() {
@@ -287,6 +288,7 @@ function Chatroom() {
     getGroupList()
     messageListener();
     activityListener();
+    typingListener()
   }
  }, [user])
 
@@ -353,7 +355,7 @@ function Chatroom() {
          </div>
        ))}
      </ul>
-     {typingListener}
+     {recTyping && <p>{receiverID} is typing...</p>}
      <div className="chatInputWrapper">
        <cometchat-emoji-keyboard style={emojiKeyboardStyle} ref={emojiKeyboardRef}></cometchat-emoji-keyboard>
        <form onSubmit={handleSubmit}>

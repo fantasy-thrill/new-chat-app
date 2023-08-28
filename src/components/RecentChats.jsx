@@ -2,6 +2,7 @@ import React from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import chat from "../lib/chatdata"
+import { deleteMessages } from "../config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faRightToBracket, faCircle } from "@fortawesome/free-solid-svg-icons";
 import { calculateTimeDifference, displayDateOrTime } from "../smalleffects";
@@ -42,7 +43,11 @@ function RecentChats() {
           return chat.messagesRequest(receiverID, 100)
             .then(
               messages => {
-               const cleanList = messages.filter(message => !message.hasOwnProperty("action") && !message.hasOwnProperty("deletedAt"))
+               const cleanList = messages.filter(message => 
+                  !message.hasOwnProperty("action") && 
+                  !message.hasOwnProperty("deletedAt") &&
+                  !deleteMessages[user["uid"]].includes(message["id"])
+                )
                convo["lastMessage"] = cleanList[cleanList.length - 1]
               },
               error => console.log("Could not display conversations: " + error)
@@ -102,7 +107,12 @@ function RecentChats() {
   chat.messagesRequest(receiver, 100)
    .then(
     messages => {
-      const lastMessage = messages[messages.length - 1]
+      const cleanList = messages.filter(message => 
+        !message.hasOwnProperty("action") && 
+        !message.hasOwnProperty("deletedAt") &&
+        !deleteMessages[user["uid"]].includes(message["id"])
+      )
+      const lastMessage = cleanList[cleanList.length - 1]
       if (lastMessage["sender"]["uid"] !== user["uid"] && !lastMessage.hasOwnProperty("readAt")) { chat.markAsRead(lastMessage) }
     },
     error => { console.log("Could not fetch messages: " + error) }
