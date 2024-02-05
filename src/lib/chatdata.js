@@ -6,6 +6,7 @@ export default class CCManager {
   static LISTENER_KEY_MESSAGE = "msglistener";
   static LISTENER_KEY_ACTIVITY = "actvylistener";
   static LISTENER_KEY_CONVERSATION = "convolistener";
+  static LISTENER_KEY_TYPING = "typinglistener";
   static appID = config.appID;
   static apiKey = config.apiKey;
   static authKey = config.authKey;
@@ -101,7 +102,7 @@ export default class CCManager {
   }
   static addTypingListener(stateFunction) {
     CometChat.addMessageListener(
-      this.LISTENER_KEY_MESSAGE,
+      this.LISTENER_KEY_TYPING,
       new CometChat.MessageListener({
         onTypingStarted: typingIndicator => stateFunction(true),
         onTypingEnded: typingIndicator => stateFunction(false)

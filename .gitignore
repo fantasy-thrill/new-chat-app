@@ -1,3 +1,4 @@
 node_modules
 src/config.js
+.env
 vite.config.js.timestamp-1689016967970.mjs

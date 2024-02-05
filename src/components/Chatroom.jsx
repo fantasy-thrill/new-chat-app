@@ -285,16 +285,17 @@ function Chatroom() {
 
  useEffect(() => {
   if (user !== null) {
-    getGroupList()
+    getGroupList();
     messageListener();
     activityListener();
-    typingListener()
+    typingListener();
   }
  }, [user])
 
  useEffect(() => {
   if (textConversation.length > 0) {
     displayReceipt()
+    console.log(textConversation)
   }
  }, [textConversation])
 

@@ -132,6 +132,10 @@ function RecentChats() {
  useEffect(() => {
   if (user !== null) {
     recentConversations()
+    fetch("http://localhost:5174/data")
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error("Data not fetched: " + error))
   }
  }, [user])
 
