@@ -269,12 +269,12 @@ function Chatroom() {
 
  function backToConversationList() {
   navigate("/recentmsgs")
-  chat.removeListener(chat.LISTENER_KEY_MESSAGE, chat.LISTENER_KEY_ACTIVITY)
+  chat.removeListener(chat.LISTENER_KEY_MESSAGE, chat.LISTENER_KEY_ACTIVITY, chat.LISTENER_KEY_TYPING)
  }
 
  function logout() {
   chat.logout()
-  chat.removeListener(chat.LISTENER_KEY_MESSAGE, chat.LISTENER_KEY_ACTIVITY, chat.LISTENER_KEY_CONVERSATION)
+  chat.removeListener(chat.LISTENER_KEY_MESSAGE, chat.LISTENER_KEY_ACTIVITY, chat.LISTENER_KEY_TYPING)
   navigate("/login")
  }
  
