@@ -166,10 +166,12 @@ function RecentChats() {
           console.error("Data not fetched: " + error)
         }
       }
-
       fetchData()
       // if (deletedMessages.length !== 0)
       recentConversations()
+      // fetch("http://localhost:5174/update")
+      //   .then(response => console.log(response))
+      //   .catch(error => console.error(`No response received: \"${error}\"`))
     }
   }, [user])
 

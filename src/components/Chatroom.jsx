@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
-import config, { deleteMessages } from "../config.js"
+import config from "../config.js"
 import chat from "../lib/chatdata.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faRightToBracket, faFaceSmile } from "@fortawesome/free-solid-svg-icons";
@@ -24,6 +24,7 @@ function Chatroom() {
  const [isAuthenticated, setIsAuthenticated] = useState(true);
  const [contextMenuDisplay, setContextMenuDisplay] = useState("none");
  const [deleteMenuDisplay, setDeleteMenuDisplay] = useState("none")
+ const [deletedMessages, setDeletedMessages] = useState([])
  const [menuCoordinates, setMenuCoordinates] = useState({ x: 0, y: 0 });
  const [selected, setSelected] = useState("")
  const [isTyping, setIsTyping] = useState(false)
@@ -258,7 +259,7 @@ function Chatroom() {
         const cleanList = messages.filter(message => 
           !message.hasOwnProperty("action") && 
           !message.hasOwnProperty("deletedAt") &&
-          !deleteMessages[user["uid"]].includes(message["id"])
+          !deletedMessages[user["uid"]].includes(message["id"])
         )
         setTextConversation(cleanList)
         console.log(cleanList)
@@ -285,6 +286,23 @@ function Chatroom() {
 
  useEffect(() => {
   if (user !== null) {
+    async function fetchData() {
+      try {
+        const response = await fetch("http://localhost:5174/data")
+        const data = await response.json()
+        if (data) {
+          console.log(data)
+          const userInfo = data[0]
+          for (const userID in userInfo) {
+            if (userID === user.uid)
+              setDeletedMessages(userInfo[userID].deletedMsgs)
+          }
+        }
+      } catch (error) {
+        console.error("Data not fetched: " + error)
+      }
+    }
+    fetchData()
     getGroupList();
     messageListener();
     activityListener();

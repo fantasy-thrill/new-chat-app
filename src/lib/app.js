@@ -11,7 +11,6 @@ const port = process.env.PORT
 app.use(express.json())
 app.use(cors())
 
-// Connect to MongoDB Atlas
 const client = new MongoClient(mongoURI);
 client.connect()
 console.log("Connected to MongoDB Atlas")
@@ -33,13 +32,17 @@ app.get("/data", async (req, res) => {
   }
 })
 
-app.put("/update", async (req, res) => {
+app.put("/update/:uid/:msgid", async (req, res) => {
+  // console.log(req.params);
+  // console.log(req.params.uid)
+  // res.end("Request body received")
   try {
     const users = db.collection(process.env.DB_COLLECTION)
     const filter = { _id: process.env.DB_COLLECTION_ID }
     const updateDoc = {
       $set: {
         // User ID and new deleted messages array goes here
+        
       }
     }
 
@@ -51,7 +54,6 @@ app.put("/update", async (req, res) => {
   }
 })
 
-// Start the Express server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
 })
