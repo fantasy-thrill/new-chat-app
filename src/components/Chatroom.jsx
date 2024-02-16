@@ -10,7 +10,6 @@ import {
   faFaceSmile,
 } from "@fortawesome/free-solid-svg-icons"
 import {
-  calculateTimeDifference,
   displayDateOrTime,
   darkenBackground,
   lightenBackground,
@@ -33,7 +32,7 @@ function Chatroom() {
   const [isAuthenticated, setIsAuthenticated] = useState(true)
   const [contextMenuDisplay, setContextMenuDisplay] = useState("none")
   const [deleteMenuDisplay, setDeleteMenuDisplay] = useState("none")
-  const [deletedMessages, setDeletedMessages] = useState([])
+  const [deletedMessages, setDeletedMessages] = useState(undefined)
   const [menuCoordinates, setMenuCoordinates] = useState({ x: 0, y: 0 })
   const [selected, setSelected] = useState("")
   const [isTyping, setIsTyping] = useState(false)
@@ -260,7 +259,7 @@ function Chatroom() {
       )
       const resDetails = await response.json()
       console.log(resDetails)
-    //  if (resDetails[acknowledged]) console.log("Deleted messages updated successfully")
+      if (resDetails["acknowledged"]) console.log("Deleted messages updated successfully")
     } catch (error) {
       console.error(`No update was made: \"${error}\"`)
     }
@@ -323,7 +322,7 @@ function Chatroom() {
   useEffect(() => console.log(selected), [selected])
 
   useEffect(() => {
-    if (user !== null) {
+    if (user) {
       async function fetchData() {
         try {
           const response = await fetch("http://localhost:5174/data")
@@ -359,8 +358,8 @@ function Chatroom() {
   }, [textConversation])
 
   useEffect(() => {
-    if (user !== null && receiverID !== "") {
-      if (deletedMessages.length !== 0) getConversation()
+    if (user && receiverID) {
+      if (deletedMessages) getConversation()
     }
   }, [user, receiverID, deletedMessages])
 

@@ -9,13 +9,14 @@ import {
   faRightToBracket,
   faCircle,
 } from "@fortawesome/free-solid-svg-icons"
-import { calculateTimeDifference, displayDateOrTime } from "../smalleffects"
+import { displayDateOrTime } from "../smalleffects"
+import loader from "../assets/loader.svg"
 
 function RecentChats() {
-  const [user, setUser] = useState({})
+  const [user, setUser] = useState(null)
   const [isAuthenticated, setIsAuthenticated] = useState(true)
-  const [conversations, setConversations] = useState([])
-  const [deletedMessages, setDeletedMessages] = useState([])
+  const [conversations, setConversations] = useState(undefined)
+  const [deletedMessages, setDeletedMessages] = useState(undefined)
 
   const navigate = useNavigate()
   const lastMessagePara = useRef(null)
@@ -41,9 +42,7 @@ function RecentChats() {
       .then(
         conversationList => {
           if (conversationList.length === 0) {
-            const messageList = document.querySelector("#messageList")
-            messageList.innerHTML =
-              '<h2 style="text-align: center; opacity: 0.7;">No conversations to display.</h2>'
+            setConversations([])
           } else {
             const updatedList = conversationList.map(convo => {
               const receiverID = convo["conversationWith"]["uid"]
@@ -149,7 +148,7 @@ function RecentChats() {
   }, [])
 
   useEffect(() => {
-    if (user !== null) {
+    if (user) {
       async function fetchData() {
         try {
           const response = await fetch("http://localhost:5174/data")
@@ -166,27 +165,31 @@ function RecentChats() {
         }
       }
       fetchData()
-      // if (deletedMessages.length !== 0)
-      recentConversations()
     }
   }, [user])
 
   useEffect(() => {
-    if (deletedMessages) console.log(deletedMessages)
+    if (deletedMessages) {
+      recentConversations()
+      console.log(deletedMessages)
+    }
   }, [deletedMessages])
 
   useEffect(() => {
-    const messageList = document.querySelector("#messageList")
-    if (conversations.length === 0) {
-      messageList.style.borderBottom = "none"
-    } else {
-      messageListener()
-      messageList.style.borderBottom = "1px solid black"
-      console.log(conversations)
+    console.log(conversations)
+    if (conversations) {
+      const messageList = document.querySelector("#messageList")
+      if (conversations.length === 0) {
+        messageList.style.borderBottom = "none"
+      } else {
+        messageListener()
+        messageList.style.borderBottom = "1px solid black"
+        //console.log(conversations)
+      }
     }
   }, [conversations])
 
-  return (
+  return user && conversations ? (
     <div id="page">
       <div className="navigation-recent">
         <div className="userInfo">
@@ -210,47 +213,53 @@ function RecentChats() {
           </button>
         </div>
         <div id="messageList">
-          {conversations.map(convo => {
-            const receiverID = convo["conversationWith"]["uid"]
-            const receiverName = convo["conversationWith"]["name"]
-            const senderID = convo["lastMessage"]["sender"]["uid"]
-            const messageText = convo["lastMessage"]["text"]
+          {conversations.length !== 0 ? (
+            conversations.map(convo => {
+              const receiverID = convo["conversationWith"]["uid"]
+              const receiverName = convo["conversationWith"]["name"]
+              const senderID = convo["lastMessage"]["sender"]["uid"]
+              const messageText = convo["lastMessage"]["text"]
 
-            const sentTime = convo["lastMessage"]["sentAt"]
+              const sentTime = convo["lastMessage"]["sentAt"]
 
-            return (
-              <div className="conversation" key={convo["conversationId"]} onClick={e => goToChat(receiverID)}>
-                <div className="profilePic">
-                  <img src={convo["conversationWith"]["avatar"]} alt={receiverID} className="avatar" />
-                </div>
-                <div className="conversationInfo">
-                  <h3 className="receiver">
-                    {receiverName}
-                    <span className="userID">{receiverID}</span>
-                  </h3>
-                  {senderID === user["uid"] ? (
-                    <p className="last-message">You: {messageText}</p>
-                  ) : senderID !== user["uid"] &&
-                    !convo["lastMessage"].hasOwnProperty("readAt") ? (
-                    <>
-                      <p className="last-message" style={unreadMsgStyle} ref={lastMessagePara}>
-                        <FontAwesomeIcon icon={faCircle} size="sm" style={{ color: "#1c5bca" }} className="icon-spacing" />
+              return (
+                <div className="conversation" key={convo["conversationId"]} onClick={e => goToChat(receiverID)}>
+                  <div className="profilePic">
+                    <img src={convo["conversationWith"]["avatar"]} alt={receiverID} className="avatar" />
+                  </div>
+                  <div className="conversationInfo">
+                    <h3 className="receiver">
+                      {receiverName}
+                      <span className="userID">{receiverID}</span>
+                    </h3>
+                    {senderID === user["uid"] ? (
+                      <p className="last-message">You: {messageText}</p>
+                    ) : senderID !== user["uid"] &&
+                      !convo["lastMessage"].hasOwnProperty("readAt") ? (
+                      <>
+                        <p className="last-message" style={unreadMsgStyle} ref={lastMessagePara}>
+                          <FontAwesomeIcon icon={faCircle} size="sm" style={{ color: "#1c5bca" }} className="icon-spacing" />
+                          {messageText}
+                        </p>
+                      </>
+                    ) : (
+                      <p className="last-message" ref={lastMessagePara}>
                         {messageText}
                       </p>
-                    </>
-                  ) : (
-                    <p className="last-message" ref={lastMessagePara}>
-                      {messageText}
-                    </p>
-                  )}
+                    )}
+                  </div>
+                  <div className="dateOrTime">{displayDateOrTime(sentTime)}</div>
                 </div>
-                <div className="dateOrTime">{displayDateOrTime(sentTime)}</div>
-              </div>
-            )
-          })}
+              )
+            })) : (<h2 style="text-align: center; opacity: 0.7;">No conversations to display.</h2>)}
         </div>
       </div>
     </div>
+  ) : (
+    <>
+      <img src={loader} />
+      <h2>Loading...</h2>
+    </>
   )
 }
 

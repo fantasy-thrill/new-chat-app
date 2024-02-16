@@ -1,4 +1,5 @@
 node_modules
+.DS_Store
 src/config.js
-.env
+*.env
 vite.config.js.timestamp-1689016967970.mjs
