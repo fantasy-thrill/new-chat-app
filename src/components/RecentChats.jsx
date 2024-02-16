@@ -155,7 +155,6 @@ function RecentChats() {
           const response = await fetch("http://localhost:5174/data")
           const data = await response.json()
           if (data) {
-            console.log(data)
             const userInfo = data[0]
             for (const userID in userInfo) {
               if (userID === user.uid)
@@ -169,9 +168,6 @@ function RecentChats() {
       fetchData()
       // if (deletedMessages.length !== 0)
       recentConversations()
-      // fetch("http://localhost:5174/update")
-      //   .then(response => console.log(response))
-      //   .catch(error => console.error(`No response received: \"${error}\"`))
     }
   }, [user])
 

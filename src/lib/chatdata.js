@@ -174,10 +174,12 @@ export default class CCManager {
   static deleteMessage(messageID) {
     CometChat.deleteMessage(messageID)
     .then(
-      message => console.log("Message deleted: " + message),
-      error => console.log("Error: Message not deleted: " + error)
+      message => console.log("Message deleted: ", message),
+      error => console.log("Error: Message not deleted: ", error)
     )
   }
+
+  // Function probably no longer needed
   static deleteForMe(UID, messageID) {
     for (const user in deleteMessages) {
       if (UID === user) {

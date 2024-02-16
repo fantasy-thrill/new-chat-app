@@ -1,5 +1,5 @@
 const express = require("express")
-const { MongoClient } = require("mongodb")
+const { MongoClient, ObjectId } = require("mongodb")
 const app = express()
 const cors = require("cors")
 require("dotenv").config()
@@ -32,25 +32,31 @@ app.get("/data", async (req, res) => {
   }
 })
 
-app.put("/update/:uid/:msgid", async (req, res) => {
-  // console.log(req.params);
-  // console.log(req.params.uid)
-  // res.end("Request body received")
+app.put("/update/:uid/:authToken/:msgid", async (req, res) => {
   try {
     const users = db.collection(process.env.DB_COLLECTION)
-    const filter = { _id: process.env.DB_COLLECTION_ID }
+    const usersObj = await users
+      .find()
+      .toArray()
+    const filter = { _id: new ObjectId(process.env.DB_COLLECTION_ID) }
+    const userID = req.params.uid
     const updateDoc = {
       $set: {
         // User ID and new deleted messages array goes here
-        
+        [userID]: {
+          authToken: req.params.authToken,
+          deletedMsgs: [...usersObj[0][userID].deletedMsgs, req.params.msgid]
+        }
       }
     }
 
     const result = await users.updateOne(filter, updateDoc)
+    res.json(result)
     console.log("User's deleted messages have been updated.")
 
   } catch (error) {
     console.error(`Could not update deleted messages: \"${error}\"`)
+    res.end("Could not update")
   }
 })
 
