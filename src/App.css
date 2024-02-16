@@ -342,6 +342,7 @@ body {
   display: block !important;
 }
 #overlay {
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
@@ -360,6 +361,7 @@ body {
   cursor: pointer;
 }
 #delete-menu {
+  display: none;
   position: fixed;
   top: 50%;
   left: 50%;

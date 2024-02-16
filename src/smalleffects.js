@@ -48,3 +48,25 @@ export function lightenBackground(element) {
   const lightenedColor = `rgb(${lightenedRGB.join(', ')})`;
   element.style.backgroundColor = lightenedColor;
 }
+
+export function displayDeleteMenu(display) {
+  const deleteMenu = document.getElementById("delete-menu")
+  const darkShade = document.getElementById("overlay")
+
+  const layout = [deleteMenu, darkShade]
+  layout.forEach(element => {
+    if (element) element.style.display = display
+    console.log("Set display: " + display, "Current display: " + element.style.display)
+  })
+}
+
+export function removeContextMenu() {
+  const messages = document.querySelectorAll(".msg")
+  for (const message of messages) {
+    if (message.classList.contains("selected")) {
+      lightenBackground(message)
+      message.classList.remove("selected")
+    }
+  }
+  displayDeleteMenu("none")
+}
