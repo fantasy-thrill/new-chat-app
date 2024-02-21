@@ -256,10 +256,10 @@ function RecentChats() {
       </div>
     </div>
   ) : (
-    <>
+    <div id="loading">
       <img src={loader} />
       <h2>Loading...</h2>
-    </>
+    </div>
   )
 }
 

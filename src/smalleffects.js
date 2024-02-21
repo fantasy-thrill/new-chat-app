@@ -1,16 +1,16 @@
 export function calculateTimeDifference(timestamp) {
-  const currentDate = new Date();
-  const timestampDate = new Date(timestamp * 1000);
-  const timeDiff = currentDate - timestampDate;
-  const hoursDiff = Math.floor(timeDiff / (1000 * 60 * 60));
-  const minutesDiff = Math.floor(timeDiff / (1000 * 60));
-  const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+  const currentDate = new Date()
+  const timestampDate = new Date(timestamp * 1000)
+  const timeDiff = currentDate - timestampDate
+  const hoursDiff = Math.floor(timeDiff / (1000 * 60 * 60))
+  const minutesDiff = Math.floor(timeDiff / (1000 * 60))
+  const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
 
   return {
     hoursDiff,
     daysDiff,
-    minutesDiff
-  };
+    minutesDiff,
+  }
 }
 
 export function displayDateOrTime(timestamp) {
@@ -21,32 +21,40 @@ export function displayDateOrTime(timestamp) {
     const messageTime = timestampDate.toLocaleTimeString([], format)
     return messageTime
   } else if (timeDiff["hoursDiff"] >= 24 && timeDiff["hoursDiff"] < 48) {
-     const messageTime = timestampDate.toLocaleTimeString([], format)
-     return "Yesterday, " + messageTime
+    const messageTime = timestampDate.toLocaleTimeString([], format)
+    return "Yesterday, " + messageTime
   } else if (timeDiff["hoursDiff"] >= 48 && timeDiff["daysDiff"] < 7) {
-     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-     const dayOfWeek = daysOfWeek[timestampDate.getDay()];
-     return dayOfWeek;
+    const daysOfWeek = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ]
+    const dayOfWeek = daysOfWeek[timestampDate.getDay()]
+    return dayOfWeek
   } else if (timeDiff["daysDiff"] >= 7) {
-     const messageDay = timestampDate.toLocaleDateString()
-     return messageDay
+    const messageDay = timestampDate.toLocaleDateString()
+    return messageDay
   }
 }
 
 export function darkenBackground(element) {
-  const currentBackgroundColor = getComputedStyle(element).backgroundColor;
-  const rgb = currentBackgroundColor.match(/\d+/g);
-  const darkenedRGB = rgb.map(value => Math.max(value - 50, 0));
-  const darkenedColor = `rgb(${darkenedRGB.join(', ')})`;
-  element.style.backgroundColor = darkenedColor;
+  const currentBackgroundColor = getComputedStyle(element).backgroundColor
+  const rgb = currentBackgroundColor.match(/\d+/g)
+  const darkenedRGB = rgb.map(value => Math.max(value - 50, 0))
+  const darkenedColor = `rgb(${darkenedRGB.join(", ")})`
+  element.style.backgroundColor = darkenedColor
 }
 
 export function lightenBackground(element) {
-  const currentBackgroundColor = getComputedStyle(element).backgroundColor;
-  const rgb = currentBackgroundColor.match(/\d+/g);
-  const lightenedRGB = rgb.map(value => Math.min(parseInt(value) + 50, 255));
-  const lightenedColor = `rgb(${lightenedRGB.join(', ')})`;
-  element.style.backgroundColor = lightenedColor;
+  const currentBackgroundColor = getComputedStyle(element).backgroundColor
+  const rgb = currentBackgroundColor.match(/\d+/g)
+  const lightenedRGB = rgb.map(value => Math.min(parseInt(value) + 50, 255))
+  const lightenedColor = `rgb(${lightenedRGB.join(", ")})`
+  element.style.backgroundColor = lightenedColor
 }
 
 export function displayDeleteMenu(display) {
@@ -55,18 +63,24 @@ export function displayDeleteMenu(display) {
 
   const layout = [deleteMenu, darkShade]
   layout.forEach(element => {
-    if (element) element.style.display = display
-    console.log("Set display: " + display, "Current display: " + element.style.display)
+    if (element) {
+      element.style.display = display
+      console.log(`ABCSet display: ${display}\nCurrent display: ${element.style.display}`)
+    }
   })
 }
 
 export function removeContextMenu() {
   const messages = document.querySelectorAll(".msg")
+  const contextMenu = document.getElementById("contxet-menu")
+
   for (const message of messages) {
     if (message.classList.contains("selected")) {
       lightenBackground(message)
       message.classList.remove("selected")
     }
   }
-  displayDeleteMenu("none")
+
+  contextMenu.style.display = "none"
+ //  displayDeleteMenu("none")
 }

@@ -7,8 +7,7 @@ import {
   displayDateOrTime,
   darkenBackground,
   lightenBackground,
-  displayDeleteMenu,
-  removeContextMenu
+  displayDeleteMenu
 } from "../smalleffects.js"
 import "@cometchat/uikit-elements"
 
@@ -222,7 +221,7 @@ function MessageList({ user, receiver, members, deletedList }) {
 
   useEffect(() => console.log(selected), [selected])
   
-  useEffect(() => console.log(receiver))
+  // useEffect(() => console.log(receiver))
 
   useEffect(() => {
     if (textConversation.length > 0) {
@@ -344,7 +343,8 @@ function MessageList({ user, receiver, members, deletedList }) {
         </div>
         <div
           className="d-menu-choice"
-          onClick={displayDeleteMenu("none")}>
+          onClick={() => displayDeleteMenu("none")}
+        >
           Cancel
         </div>
       </div>
