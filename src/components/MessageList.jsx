@@ -75,6 +75,15 @@ function MessageList({ user, receiver, members, deletedList }) {
     )
   }
 
+  function scrollToBottom() {
+    const chatList = document.getElementById("chatList")
+    const lastMessage = chatList.lastElementChild
+    if (lastMessage) lastMessage.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    })
+  }
+
   function handleSubmit(event) {
     event.preventDefault()
     sendTextMessage(receiver)
@@ -116,12 +125,13 @@ function MessageList({ user, receiver, members, deletedList }) {
   function handleChatActivity(message, error) {
     if (error) return console.log(`error: ${error}`)
     setTextConversation(prevState => [...prevState, message])
+    setRecTyping(false)
     if (message["sender"]["uid"] !== user["uid"]) {
       chat.markAsDelivered(message)
       chat.markAsRead(message)
     }
     console.log("Message received: " + message)
-    scrollToBottom()
+    // scrollToBottom()
   }
 
   function messageListener() {
@@ -213,15 +223,19 @@ function MessageList({ user, receiver, members, deletedList }) {
 
   useEffect(() => {
     if (user) {
+    //  scrollToBottom()
       messageListener()
       activityListener()
       typingListener()
     }
   }, [user])
 
-  useEffect(() => console.log(selected), [selected])
+  // useEffect(() => console.log(selected), [selected])
   
-  // useEffect(() => console.log(receiver))
+  useEffect(() => {
+    const chatList = document.getElementById("chatList")
+    if (chatList) scrollToBottom()
+  })
 
   useEffect(() => {
     if (textConversation.length > 0) {
@@ -236,9 +250,12 @@ function MessageList({ user, receiver, members, deletedList }) {
         <label htmlFor="members">Send to: </label>
         <select
           name="members"
-          value={receiver}
           id="members"
-          onChange={event => receiver = event.target.value}>
+          onChange={(event) => {
+            receiver = event.target.value
+            console.log(receiver)
+            getConversation()
+          }}>
           <option value="">Select receipient</option>
           {members.map(member => (
             <option value={member["name"]} key={member["key"]}>

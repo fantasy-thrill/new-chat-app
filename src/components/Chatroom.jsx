@@ -10,7 +10,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import "@cometchat/uikit-elements"
 import MessageList from "./MessageList.jsx"
-import { displayDeleteMenu } from "../smalleffects.js"
 
 function useQuery() {
   const { search } = useLocation()
@@ -20,20 +19,14 @@ function useQuery() {
 function Chatroom() {
   const query = useQuery()
 
- //  const [receiverID, setReceiverID] = 
   const [memberList, setMemberList] = useState([])
   const [user, setUser] = useState(null)
   const [isAuthenticated, setIsAuthenticated] = useState(true)
-  // const [deleteMenuDisplay, setDeleteMenuDisplay] = useState("none")
   const [deletedMessages, setDeletedMessages] = useState(undefined)
 
   let receiverID = useState(query.get("receipient") ?? "")[0]
   const navigate = useNavigate()
   const GUID = config.GUID
-
-  // const displayStyle = {
-  //   display: deleteMenuDisplay,
-  // }
 
   // Unused function
   function sendMessageToGroup() {
@@ -52,11 +45,6 @@ function Chatroom() {
         }
       }
     )
-  }
-
-  function scrollToBottom() {
-    const chatList = document.getElementById("chatList")
-    chatList.scrollTop = chatList.scrollHeight
   }
 
   function getUser() {

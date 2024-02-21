@@ -258,7 +258,7 @@ function RecentChats() {
   ) : (
     <div id="loading">
       <img src={loader} />
-      <h2>Loading...</h2>
+      <h2 style={{ textAlign: "center" }}>Loading...</h2>
     </div>
   )
 }
