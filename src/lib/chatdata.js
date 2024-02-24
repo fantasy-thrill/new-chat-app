@@ -1,22 +1,17 @@
 import { CometChat } from "@cometchat-pro/chat";
-import config from "../config";
-import { deleteMessages } from "../config";
 
 export default class CCManager {
   static LISTENER_KEY_MESSAGE = "msglistener";
   static LISTENER_KEY_ACTIVITY = "actvylistener";
   static LISTENER_KEY_CONVERSATION = "convolistener";
   static LISTENER_KEY_TYPING = "typinglistener";
-  static appID = config.appID;
-  static apiKey = config.apiKey;
-  static authKey = config.authKey;
   static LISTENER_KEY_GROUP = "grouplistener";
   static init() {
     const appSetting = new CometChat.AppSettingsBuilder()
       .subscribePresenceForAllUsers()
       .setRegion("US")
       .build();
-    return CometChat.init(CCManager.appID, appSetting);
+    return CometChat.init(import.meta.env.VITE_APP_ID, appSetting);
   }
   static getTextMessage(UID, text, msgType) {
     if (msgType === "user") {
