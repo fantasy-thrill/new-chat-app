@@ -6,6 +6,7 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons"
 
 function CreateAccount() {
   const navigate = useNavigate()
+  const passwordExp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
 
   return (
     <div id="account-creation">
@@ -17,11 +18,13 @@ function CreateAccount() {
         <h2 style={{ textAlign: "center" }}>Sign up for Yapper</h2>
         <form id="creation-form">
           <label htmlFor="name">Full display name: </label>
-          <input type="text" id="name" />
+          <input type="text" id="name" required />
           <label htmlFor="user-id">User ID: </label>
-          <input type="text" id="user-id" />
+          <input type="text" id="user-id" required />
           <label htmlFor="set-profile-pic">Profile picture: </label>
           <input type="file" id="set-profile-pic" accept="image/*,.jpg,.jpeg,.png" />
+          <label htmlFor="create-password">Password: </label>
+          <input type="password" id="create-password" minLength={8} pattern={passwordExp} required />
         </form>
       </div>
     </div>
