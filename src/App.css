@@ -57,7 +57,7 @@ input#name, input#user-id {
   display: flex;
   flex-direction: column;
 }
-#uid-login, #pwd-login {
+#uid-login, #pwd-login, #authkey-input {
   width: 20em;
   height: 2em;
   margin-bottom: 0.625em;

@@ -2,76 +2,76 @@ import React from "react"
 import { useState, useEffect } from "react"
 import { Navigate, useNavigate } from "react-router-dom"
 import chat from "../lib/chatdata"
-// import { authTokens } from "../config"
 import logo from "../logo.svg"
 
 function Login() {
-  const [username, setUsername] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [userInfo, setUserInfo] = useState(null);
-  // const [errorMessage, setErrorMessage] = useState("");
+  const [username, setUsername] = useState("")
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [user, setUser] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [userInfo, setUserInfo] = useState(null)
+  const [developerLogin, setDeveloperLogin] = useState(false)
+  const [authKey, setAuthKey] = useState("")
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   async function fetchData() {
     try {
-      const response = await fetch("http://localhost:5174/data");
-      const data = await response.json();
+      const response = await fetch("http://localhost:5174/data")
+      const data = await response.json()
       if (data) {
-        const { _id, ...newData } = data[0];
-        setUserInfo(newData);
-        console.log("Information retrieved successfully");
+        const { _id, ...newData } = data[0]
+        setUserInfo(newData)
+        console.log("Information retrieved successfully")
       }
     } catch (error) {
-      console.error(`User information not fetched: "${error}"`);
+      console.error(`User information not fetched: "${error}"`)
     }
   }
 
   function onSubmit(e) {
-    e.preventDefault();
+    e.preventDefault()
 
-    if (username !== "") {
-      login();
+    if (username && authKey === import.meta.env.VITE_AUTH_KEY) {
+      login()
     }
   }
 
   async function login() {
-    toggleIsSubmitting();
-    let token = "";
+    toggleIsSubmitting()
+    let token = ""
 
     if (userInfo) {
       for (const userID in userInfo) {
         if (userID === username) {
-          token = userInfo[userID].authToken;
-          break;
+          token = userInfo[userID].authToken
+          break
         }
       }
 
       try {
-        const user = await chat.login(token);
-        setUser(user);
-        setIsAuthenticated(true);
+        const user = await chat.login(token)
+        setUser(user)
+        setIsAuthenticated(true)
       } catch (error) {
-        // setErrorMessage(".");
         const errorMessage = document.querySelector(".error")
         errorMessage.style.display = "inline"
-        console.error(error);
+        console.error(error)
+        console.log(token)
       } finally {
-        toggleIsSubmitting();
+        toggleIsSubmitting()
       }
     }
   }
 
   function toggleIsSubmitting() {
-    setIsSubmitting(prevState => !prevState);
+    setIsSubmitting(prevState => !prevState)
   }
 
-  function handleInputChange(e) {
-    setUsername(e.target.value);
-    // setErrorMessage("");
-  }
+  // function handleInputChange(e) {
+  //   setUsername(e.target.value)
+  //   // setErrorMessage("");
+  // }
 
   // useEffect(() => {
   //   fetchData();
@@ -86,40 +86,72 @@ function Login() {
         }}
         replace
       />
-    );
+    )
   }
 
   return (
-    <div className="App" style={{ height: "75vh" }}> 
+    <div className="App" style={{ height: "75vh" }}>
       <h1 style={{ margin: "0.25em 0" }}>YAPPER</h1>
       <p>
         Create an account through your CometChat dashboard or login with one of
         our test users, superhero1, superhero2, etc.
       </p>
-      <form className="login-form" onSubmit={onSubmit}>
-        <label htmlFor="uid-login">User ID</label>
-        <input onChange={handleInputChange} type="text" id="uid-login" />
+      {developerLogin ? (
+        <>
+          <form className="login-form" onSubmit={onSubmit}>
+            <label htmlFor="uid-login">Test user ID</label>
+            <input onChange={(e) => setUsername(e.target.value)} type="text" id="uid-login" />
 
-        <label htmlFor="pwd-login">Password</label>
-        <input type="password" id="pwd-login" />
-        
-        <span className="error">Login failed. Please try again</span>
-        {isSubmitting ? (
-          <img src={logo} alt="Spinner component" className="App-logo" />
-        ) : (
-          <button type="submit" disabled={username === ""} value="LOGIN">
-            LOGIN
-          </button>
-        )}
-      </form>
-      <span className="other-cases" onClick={() => navigate("/register")}>
-        Create an account
-      </span>
-      <span className="other-cases" onClick={{/* function for hiding password input goes here */}}>
-        Login with a test user
-      </span>
+            <label htmlFor="authkey-input">Authentication Key</label>
+            <input onChange={(e) => setAuthKey(e.target.value)} type="text" id="authkey-input" />
+
+            <span className="error">Login failed. Please try again</span>
+            {isSubmitting ? (
+              <img src={logo} alt="Spinner component" className="App-logo" />
+            ) : (
+              <button type="submit" disabled={username === ""} value="LOGIN">
+                LOGIN
+              </button>
+            )}
+          </form>
+          <span className="other-cases" onClick={() => navigate("/register")}>
+            Create an account
+          </span>
+          <span className="other-cases" onClick={() => setDeveloperLogin(false)}>
+            Login as regular user
+          </span>
+        </>
+      ) : (
+        <>
+          <form className="login-form" onSubmit={onSubmit}>
+            <label htmlFor="uid-login">User ID</label>
+            <input onChange={(e) => setUsername(e.target.value)} type="text" id="uid-login" />
+
+            <label htmlFor="pwd-login">Password</label>
+            <input type="password" id="pwd-login" />
+
+            <span className="error">Login failed. Please try again</span>
+            {isSubmitting ? (
+              <img src={logo} alt="Spinner component" className="App-logo" />
+            ) : (
+              <button type="submit" disabled={username === ""} value="LOGIN">
+                LOGIN
+              </button>
+            )}
+          </form>
+          <span className="other-cases" onClick={() => navigate("/register")}>
+            Create an account
+          </span>
+          <span className="other-cases" onClick={() => {
+            setDeveloperLogin(true)
+            fetchData()
+          }}>
+            Login with a test user (developers only)
+          </span>
+        </>
+      )}
     </div>
-  );
+  )
 }
 
 export default Login
