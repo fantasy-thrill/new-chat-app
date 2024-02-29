@@ -223,7 +223,6 @@ function MessageList({ user, receiver, members, deletedList }) {
 
   useEffect(() => {
     if (user) {
-    //  scrollToBottom()
       messageListener()
       activityListener()
       typingListener()

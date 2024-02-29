@@ -13,6 +13,19 @@ export default class CCManager {
       .build();
     return CometChat.init(import.meta.env.VITE_APP_ID, appSetting);
   }
+  static createNewUser(name, uid, authKey) {
+    const user = new CometChat.User(uid)
+    user.setName(name)
+
+    CometChat.createUser(user, authKey)
+      .then(
+        user => {
+          console.log("User created\n", user);
+        }, error => {
+          console.log(`User creation failed: "${error}"`);
+        }
+      )
+  }
   static getTextMessage(UID, text, msgType) {
     if (msgType === "user") {
       return new CometChat.TextMessage(
@@ -57,9 +70,9 @@ export default class CCManager {
   }
   static conversationsRequest() {
     return new CometChat.ConversationsRequestBuilder()
-     .setLimit(30)
-     .setConversationType("user")
-     .build()
+      .setLimit(30)
+      .setConversationType("user")
+      .build()
   }
   static sendIndividualMessage(UID, message) {
     const textMessage = this.getTextMessage(UID, message, "user");
@@ -109,11 +122,11 @@ export default class CCManager {
       this.LISTENER_KEY_ACTIVITY,
       new CometChat.MessageListener({
         onMessagesDelivered: messageReceipt => {
-           firstCallback(messageReceipt)
-         },
-         onMessagesRead: messageReceipt => {
-           secondCallback(messageReceipt)
-         }
+          firstCallback(messageReceipt)
+        },
+        onMessagesRead: messageReceipt => {
+          secondCallback(messageReceipt)
+        }
       })
     )
   }
@@ -146,32 +159,32 @@ export default class CCManager {
   }
   static markAsDelivered(message) {
     CometChat.markAsDelivered(message)
-     .then(
-      () => {
-        console.log("Message delivered");
-      },
-      (error) => {
-        console.log("Message not delivered: " + error);
-      }
-     )
+      .then(
+        () => {
+          console.log("Message delivered");
+        },
+        (error) => {
+          console.log("Message not delivered: " + error);
+        }
+      )
   }
   static markAsRead(message) {
     CometChat.markAsRead(message)
-     .then(
-      () => {
-        console.log("Message read");
-      },
-      (error) => {
-        console.log("Message not read: " + error);
-      }
-     )
+      .then(
+        () => {
+          console.log("Message read");
+        },
+        (error) => {
+          console.log("Message not read: " + error);
+        }
+      )
   }
   static deleteMessage(messageID) {
     CometChat.deleteMessage(messageID)
-    .then(
-      message => console.log("Message deleted: ", message),
-      error => console.log("Error: Message not deleted: ", error)
-    )
+      .then(
+        message => console.log("Message deleted: ", message),
+        error => console.log("Error: Message not deleted: ", error)
+      )
   }
 
   // Function probably no longer needed
@@ -186,6 +199,6 @@ export default class CCManager {
   static logout() {
     CometChat.logout()
       .then(() => { console.log("Logout successful") })
-      .catch(error => { console.log("Logout failed with error:", error) }) 
+      .catch(error => { console.log("Logout failed with error:", error) })
   }
 }

@@ -34,8 +34,6 @@ function Login() {
 
     if (username !== "") {
       login();
-    // } else {
-    //   setErrorMessage("Please enter a valid username");
     }
   }
 
@@ -75,9 +73,9 @@ function Login() {
     // setErrorMessage("");
   }
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   if (isAuthenticated) {
     return (
@@ -92,14 +90,19 @@ function Login() {
   }
 
   return (
-    <div className="App">
-      <h1>YAPPER</h1>
+    <div className="App" style={{ height: "75vh" }}> 
+      <h1 style={{ margin: "0.25em 0" }}>YAPPER</h1>
       <p>
         Create an account through your CometChat dashboard or login with one of
         our test users, superhero1, superhero2, etc.
       </p>
-      <form className="form" onSubmit={onSubmit}>
-        <input onChange={handleInputChange} type="text" />
+      <form className="login-form" onSubmit={onSubmit}>
+        <label htmlFor="uid-login">User ID</label>
+        <input onChange={handleInputChange} type="text" id="uid-login" />
+
+        <label htmlFor="pwd-login">Password</label>
+        <input type="password" id="pwd-login" />
+        
         <span className="error">Login failed. Please try again</span>
         {isSubmitting ? (
           <img src={logo} alt="Spinner component" className="App-logo" />
@@ -109,8 +112,11 @@ function Login() {
           </button>
         )}
       </form>
-      <span id="create-account" onClick={() => navigate("/register")}>
+      <span className="other-cases" onClick={() => navigate("/register")}>
         Create an account
+      </span>
+      <span className="other-cases" onClick={{/* function for hiding password input goes here */}}>
+        Login with a test user
       </span>
     </div>
   );
