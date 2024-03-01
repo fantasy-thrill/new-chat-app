@@ -1,3 +1,4 @@
+const https = require("https")
 const express = require("express")
 const { MongoClient, ObjectId } = require("mongodb")
 const app = express()
@@ -9,6 +10,7 @@ const dbName = process.env.DB_NAME
 const port = process.env.PORT
 
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 app.use(cors())
 
 const client = new MongoClient(mongoURI);
@@ -16,6 +18,16 @@ client.connect()
 console.log("Connected to MongoDB Atlas")
 
 const db = client.db(dbName)
+
+app.post("/create-account", async (req, res) => {
+  try {
+    res.json(req.body)
+    console.log("Signup form received\n", req.body)
+  } catch (error) {
+    res.end("Did not receive any info")
+    console.log(error)
+  }
+})
 
 app.get("/data", async (req, res) => {
   try {
