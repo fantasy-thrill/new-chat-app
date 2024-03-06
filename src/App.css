@@ -118,6 +118,7 @@ form button {
   border: none;
   border-radius: 0.25em;
   font-size: 1em;
+  cursor: pointer;
 }
 
 #creation-form input {

@@ -3,6 +3,7 @@ const express = require("express")
 const { MongoClient, ObjectId } = require("mongodb")
 const app = express()
 const cors = require("cors")
+const bcrypt = require("bcrypt")
 require("dotenv").config()
 
 const mongoURI = process.env.CONNECTION_STRING
