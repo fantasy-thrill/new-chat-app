@@ -1,9 +1,10 @@
 const https = require("https")
+const fs = require("fs")
 const express = require("express")
 const { MongoClient, ObjectId } = require("mongodb")
 const app = express()
 const cors = require("cors")
-const bcrypt = require("bcrypt")
+// const bcrypt = require("bcrypt")
 require("dotenv").config()
 
 const mongoURI = process.env.CONNECTION_STRING
@@ -20,6 +21,12 @@ console.log("Connected to MongoDB Atlas")
 
 const db = client.db(dbName)
 
+const options = {
+  key: fs.readFileSync("./key.pem"),
+  cert: fs.readFileSync("./cert.pem"),
+  passphrase: process.env.CERT_PASSPHRASE
+}
+
 app.post("/create-account", async (req, res) => {
   try {
     res.json(req.body)
@@ -32,7 +39,6 @@ app.post("/create-account", async (req, res) => {
 
 app.get("/data", async (req, res) => {
   try {
-    // Example query: Find all documents in a collection
     const result = await db
       .collection(process.env.DB_COLLECTION)
       .find()
@@ -55,7 +61,6 @@ app.put("/update/:uid/:authToken/:msgid", async (req, res) => {
     const userID = req.params.uid
     const updateDoc = {
       $set: {
-        // User ID and new deleted messages array goes here
         [userID]: {
           authToken: req.params.authToken,
           deletedMsgs: [...usersObj[0][userID].deletedMsgs, req.params.msgid]
@@ -73,6 +78,6 @@ app.put("/update/:uid/:authToken/:msgid", async (req, res) => {
   }
 })
 
-app.listen(port, () => {
+https.createServer(options, app).listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
 })

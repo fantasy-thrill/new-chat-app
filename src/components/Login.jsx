@@ -31,9 +31,14 @@ function Login() {
 
   function onSubmit(e) {
     e.preventDefault()
+    const testUserRegex = /superhero\d/
 
-    if (username && authKey === import.meta.env.VITE_AUTH_KEY) {
-      login()
+    if (developerLogin) {
+      if (testUserRegex.test(username) && authKey === import.meta.env.VITE_AUTH_KEY) {
+        login()
+      }
+    } else {
+      if (username) login()
     }
   }
 
@@ -100,10 +105,18 @@ function Login() {
         <>
           <form className="login-form" onSubmit={onSubmit}>
             <label htmlFor="uid-login">Test user ID</label>
-            <input onChange={(e) => setUsername(e.target.value)} type="text" id="uid-login" />
+            <input
+              onChange={e => setUsername(e.target.value)}
+              type="text"
+              id="uid-login"
+            />
 
             <label htmlFor="authkey-input">Authentication Key</label>
-            <input onChange={(e) => setAuthKey(e.target.value)} type="text" id="authkey-input" />
+            <input
+              onChange={e => setAuthKey(e.target.value)}
+              type="text"
+              id="authkey-input"
+            />
 
             <span className="error">Login failed. Please try again</span>
             {isSubmitting ? (
@@ -117,7 +130,9 @@ function Login() {
           <span className="other-cases" onClick={() => navigate("/register")}>
             Create an account
           </span>
-          <span className="other-cases" onClick={() => setDeveloperLogin(false)}>
+          <span
+            className="other-cases"
+            onClick={() => setDeveloperLogin(false)}>
             Login as regular user
           </span>
         </>
@@ -125,7 +140,11 @@ function Login() {
         <>
           <form className="login-form" onSubmit={onSubmit}>
             <label htmlFor="uid-login">User ID</label>
-            <input onChange={(e) => setUsername(e.target.value)} type="text" id="uid-login" />
+            <input
+              onChange={e => setUsername(e.target.value)}
+              type="text"
+              id="uid-login"
+            />
 
             <label htmlFor="pwd-login">Password</label>
             <input type="password" id="pwd-login" />
@@ -142,10 +161,12 @@ function Login() {
           <span className="other-cases" onClick={() => navigate("/register")}>
             Create an account
           </span>
-          <span className="other-cases" onClick={() => {
-            setDeveloperLogin(true)
-            fetchData()
-          }}>
+          <span
+            className="other-cases"
+            onClick={() => {
+              setDeveloperLogin(true)
+              fetchData()
+            }}>
             Login with a test user (developers only)
           </span>
         </>
