@@ -21,8 +21,9 @@
 
 #account-creation {
   height: 100vh;
-  position: relative;
-  top: 15em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   max-width: 40em;
   margin: 0 auto;
 }

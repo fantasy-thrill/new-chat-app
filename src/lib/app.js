@@ -27,8 +27,24 @@ const options = {
   passphrase: process.env.CERT_PASSPHRASE
 }
 
+function generateAuthKey(id) {
+  let authKey = `${id}_`
+  const characters = "abcdefghijklm0123456789nopqrstuvwxyz0123456789"
+  for (let i = 0; i < 40; i++) {
+    authKey += characters.charAt(Math.floor(Math.random() * characters.length))
+  }
+  return authKey
+}
+
 app.post("/create-account", async (req, res) => {
   try {
+    const { name, user_id, password } = req.body
+    const realUsers = db.collection(process.env.DB_USER_COLLECTION)
+    const newUser = {
+      name: name,
+      uid: user_id,
+      authKey: generateAuthKey(user_id)
+    }
     res.json(req.body)
     console.log("Signup form received\n", req.body)
   } catch (error) {
