@@ -1,7 +1,6 @@
 import React from "react"
 import { useState, useEffect, useMemo } from "react"
 import { Navigate, useNavigate, useLocation } from "react-router-dom"
-import config from "../config.js"
 import chat from "../lib/chatdata.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
@@ -26,7 +25,6 @@ function Chatroom() {
 
   let receiverID = useState(query.get("receipient") ?? "")[0]
   const navigate = useNavigate()
-  const GUID = config.GUID
 
   // Unused function
   function sendMessageToGroup() {
@@ -111,14 +109,11 @@ function Chatroom() {
     if (user) {
       async function fetchData() {
         try {
-          const response = await fetch("http://localhost:5174/data")
-          const data = await response.json()
-          if (data) {
-            const userInfo = data[0]
-            for (const userID in userInfo) {
-              if (userID === user.uid)
-                setDeletedMessages(userInfo[userID].deletedMsgs)
-            }
+          const response = await fetch("https://localhost:5174/data/test")
+          const userInfo = await response.json()
+          if (userInfo) {
+            const currentUser = userInfo.find(u => u.uid === user.uid)
+            if (currentUser) setDeletedMessages(currentUser.deletedMsgs)
           }
         } catch (error) {
           console.error("Data not fetched: " + error)

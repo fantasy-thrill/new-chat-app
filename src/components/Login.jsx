@@ -12,16 +12,16 @@ function Login() {
   const [userInfo, setUserInfo] = useState(null)
   const [developerLogin, setDeveloperLogin] = useState(false)
   const [authKey, setAuthKey] = useState("")
+  const [errorMessage, setErrorMessage] = useState("")
 
   const navigate = useNavigate()
 
   async function fetchData() {
     try {
-      const response = await fetch("http://localhost:5174/data")
+      const response = await fetch("https://localhost:5174/data/test")
       const data = await response.json()
       if (data) {
-        const { _id, ...newData } = data[0]
-        setUserInfo(newData)
+        setUserInfo(data)
         console.log("Information retrieved successfully")
       }
     } catch (error) {
@@ -31,14 +31,17 @@ function Login() {
 
   function onSubmit(e) {
     e.preventDefault()
-    const testUserRegex = /superhero\d/
+    const testUserRegex = /superhero[1-5]/
 
     if (developerLogin) {
-      if (testUserRegex.test(username) && authKey === import.meta.env.VITE_AUTH_KEY) {
+      if (
+        testUserRegex.test(username) &&
+        authKey === import.meta.env.VITE_AUTH_KEY
+      ) {
         login()
+      } else {
+        setErrorMessage("Invalid test user credentials")
       }
-    } else {
-      if (username) login()
     }
   }
 
@@ -46,27 +49,25 @@ function Login() {
     toggleIsSubmitting()
     let token = ""
 
-    if (userInfo) {
-      for (const userID in userInfo) {
-        if (userID === username) {
-          token = userInfo[userID].authToken
-          break
-        }
-      }
-
-      try {
-        const user = await chat.login(token)
-        setUser(user)
-        setIsAuthenticated(true)
-      } catch (error) {
-        const errorMessage = document.querySelector(".error")
-        errorMessage.style.display = "inline"
-        console.error(error)
-        console.log(token)
-      } finally {
-        toggleIsSubmitting()
+    if (developerLogin && userInfo) {
+      const matchedUser = userInfo.find(user => user.uid === username)
+      if (matchedUser) {
+        token = matchedUser.authToken
       }
     }
+
+    try {
+      const user = await chat.login(token)
+      setUser(user)
+      setIsAuthenticated(true)
+    } catch (error) {
+      setErrorMessage("Login failed. Please try again")
+      console.error(error)
+      console.log(token)
+    } finally {
+      toggleIsSubmitting()
+    }
+    //}
   }
 
   function toggleIsSubmitting() {
@@ -118,7 +119,7 @@ function Login() {
               id="authkey-input"
             />
 
-            <span className="error">Login failed. Please try again</span>
+            <span className="error">{errorMessage}</span>
             {isSubmitting ? (
               <img src={logo} alt="Spinner component" className="App-logo" />
             ) : (
@@ -149,7 +150,7 @@ function Login() {
             <label htmlFor="pwd-login">Password</label>
             <input type="password" id="pwd-login" />
 
-            <span className="error">Login failed. Please try again</span>
+            <span className="error">{errorMessage}</span>
             {isSubmitting ? (
               <img src={logo} alt="Spinner component" className="App-logo" />
             ) : (

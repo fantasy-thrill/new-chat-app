@@ -37,10 +37,14 @@ app.post("/create-account", async (req, res) => {
   }
 })
 
-app.get("/data", async (req, res) => {
+app.get("/data/:col", async (req, res) => {
   try {
+    const collectionName = req.params.col === "test" ? 
+      process.env.DB_TEST_COLLECTION : 
+      process.env.DB_USER_COLLECTION
+
     const result = await db
-      .collection(process.env.DB_COLLECTION)
+      .collection(collectionName)
       .find()
       .toArray()
     res.json(result)
@@ -51,24 +55,22 @@ app.get("/data", async (req, res) => {
   }
 })
 
-app.put("/update/:uid/:authToken/:msgid", async (req, res) => {
+app.put("/update/:uid/:msgid", async (req, res) => {
   try {
-    const users = db.collection(process.env.DB_COLLECTION)
-    const usersObj = await users
-      .find()
-      .toArray()
-    const filter = { _id: new ObjectId(process.env.DB_COLLECTION_ID) }
-    const userID = req.params.uid
+    const collectionName = /superhero[1-5]/.test(req.params.uid) ? 
+      process.env.DB_TEST_COLLECTION : 
+      process.env.DB_USER_COLLECTION
+    const appUsers = db.collection(collectionName)
+    
+    const filter = { uid: req.params.uid }
+    const user = await appUsers.findOne(filter)
     const updateDoc = {
       $set: {
-        [userID]: {
-          authToken: req.params.authToken,
-          deletedMsgs: [...usersObj[0][userID].deletedMsgs, req.params.msgid]
-        }
+        deletedMsgs: [...user.deletedMsgs, req.params.msgid]
       }
     }
 
-    const result = await users.updateOne(filter, updateDoc)
+    const result = await appUsers.updateOne(filter, updateDoc)
     res.json(result)
     console.log("User's deleted messages have been updated.")
 

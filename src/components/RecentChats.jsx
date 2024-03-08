@@ -151,14 +151,11 @@ function RecentChats() {
     if (user) {
       async function fetchData() {
         try {
-          const response = await fetch("http://localhost:5174/data")
-          const data = await response.json()
-          if (data) {
-            const userInfo = data[0]
-            for (const userID in userInfo) {
-              if (userID === user.uid)
-                setDeletedMessages(userInfo[userID].deletedMsgs)
-            }
+          const response = await fetch("https://localhost:5174/data/test")
+          const userInfo = await response.json()
+          if (userInfo) {
+            const currentUser = userInfo.find(u => u.uid === user.uid)
+            if (currentUser) setDeletedMessages(currentUser.deletedMsgs)
           }
         } catch (error) {
           console.error("Data not fetched: " + error)
