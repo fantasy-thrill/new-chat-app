@@ -1,6 +1,7 @@
 import React from "react"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import chat from "../lib/chatdata"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons"
 
@@ -12,10 +13,15 @@ function CreateAccount() {
 
   async function submitAccountCreation() {
     try {
-      const response = await fetch("https://localhost:5174/create-account")
-      const userData = await response.json()
+      const response = await fetch("https://localhost:5174/create-account", { method: "POST" })
+      const result = await response.json()
+      if (result) {
+        const { name, uid, authKey } = result
+        chat.createNewUser(name, uid, authKey)
+        setSubmitted(true)
+      }
     } catch (error) {
-      
+      console.error(`Server error: "${error}"`)
     }
   }
 
@@ -26,13 +32,13 @@ function CreateAccount() {
         <span style={{ marginLeft: "0.5em" }}>Back to login</span>
       </div>
       {submitted ? (
-        <h1>You have successfully created your account! Click the link above to log in.</h1>
+        <h1 style={{ textAlign: "center" }}>
+          You have successfully created your account! Click the link above to log in.
+        </h1>
       ) : (
         <div>
           <h2 style={{ textAlign: "center" }}>Sign up for Yapper</h2>
-          <form
-            action="https://localhost:5174/create-account"
-            method="post">
+          <form onSubmit={submitAccountCreation}>
 
             <div id="creation-form">
               <label htmlFor="name">Full display name: </label>

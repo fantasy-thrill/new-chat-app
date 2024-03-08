@@ -4,7 +4,7 @@ const express = require("express")
 const { MongoClient, ObjectId } = require("mongodb")
 const app = express()
 const cors = require("cors")
-// const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt")
 require("dotenv").config()
 
 const mongoURI = process.env.CONNECTION_STRING
@@ -40,15 +40,21 @@ app.post("/create-account", async (req, res) => {
   try {
     const { name, user_id, password } = req.body
     const realUsers = db.collection(process.env.DB_USER_COLLECTION)
+    const hashedPassword = await bcrypt.hash(password, 10)
+
     const newUser = {
       name: name,
       uid: user_id,
-      authKey: generateAuthKey(user_id)
+      authKey: generateAuthKey(user_id),
+      password: hashedPassword
     }
-    res.json(req.body)
-    console.log("Signup form received\n", req.body)
+
+    const result = await realUsers.insertOne(newUser)
+    res.json(newUser)
+    console.log("User account created successfully!")
+  
   } catch (error) {
-    res.end("Did not receive any info")
+    res.end("No account created")
     console.log(error)
   }
 })
