@@ -13,16 +13,16 @@ export default class CCManager {
       .build();
     return CometChat.init(import.meta.env.VITE_APP_ID, appSetting);
   }
-  static createNewUser(name, uid, authKey) {
+  static createNewUser(name, uid) {
     const user = new CometChat.User(uid)
     user.setName(name)
 
-    CometChat.createUser(user, authKey)
+    CometChat.createUser(user, import.meta.env.VITE_API_KEY)
       .then(
         user => {
           console.log("User created\n", user);
         }, error => {
-          console.log(`User creation failed: "${error}"`);
+          console.log("User creation failed:\n", error);
         }
       )
   }

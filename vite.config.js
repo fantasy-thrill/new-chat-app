@@ -12,7 +12,7 @@ export default ({ mode }) => {
       https: {
         key: fs.readFileSync("./src/lib/key.pem"),
         cert: fs.readFileSync("./src/lib/cert.pem"),
-        passphrase: process.env.VITE_CERT_PASSPHRASE
+        passphrase: process.env.VITE_SSL_PASSPHRASE
       }
     }
   })

@@ -11,13 +11,19 @@ function CreateAccount() {
   const navigate = useNavigate()
   const passwordExp = "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}"
 
-  async function submitAccountCreation() {
+  async function submitAccountCreation(event) {
+    event.preventDefault()
     try {
-      const response = await fetch("https://localhost:5174/create-account", { method: "POST" })
+      const formData = new FormData(event.target)
+      console.log(formData)
+      const response = await fetch("https://localhost:5174/create-account", { 
+        method: "POST",
+        body: formData
+    })
       const result = await response.json()
       if (result) {
-        const { name, uid, authKey } = result
-        chat.createNewUser(name, uid, authKey)
+        const { name, uid } = result
+        chat.createNewUser(name, uid)
         setSubmitted(true)
       }
     } catch (error) {

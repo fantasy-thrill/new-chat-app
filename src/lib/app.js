@@ -5,6 +5,8 @@ const { MongoClient, ObjectId } = require("mongodb")
 const app = express()
 const cors = require("cors")
 const bcrypt = require("bcrypt")
+const multer = require("multer")
+const upload = multer()
 require("dotenv").config()
 
 const mongoURI = process.env.CONNECTION_STRING
@@ -27,25 +29,26 @@ const options = {
   passphrase: process.env.CERT_PASSPHRASE
 }
 
-function generateAuthKey(id) {
-  let authKey = `${id}_`
+function generateAuthToken(id) {
+  let authToken = `${id}_`
   const characters = "abcdefghijklm0123456789nopqrstuvwxyz0123456789"
   for (let i = 0; i < 40; i++) {
-    authKey += characters.charAt(Math.floor(Math.random() * characters.length))
+    authToken += characters.charAt(Math.floor(Math.random() * characters.length))
   }
-  return authKey
+  return authToken
 }
 
-app.post("/create-account", async (req, res) => {
+app.post("/create-account", upload.any(), async (req, res) => {
   try {
     const { name, user_id, password } = req.body
     const realUsers = db.collection(process.env.DB_USER_COLLECTION)
+    console.log(req.body)
     const hashedPassword = await bcrypt.hash(password, 10)
 
     const newUser = {
       name: name,
       uid: user_id,
-      authKey: generateAuthKey(user_id),
+      authToken: generateAuthToken(user_id),
       password: hashedPassword
     }
 
