@@ -151,11 +151,19 @@ function RecentChats() {
     if (user) {
       async function fetchData() {
         try {
-          const response = await fetch("https://localhost:5174/data/test")
+          const url = /superhero[1-5]/.test(user.uid) ? 
+            "https://localhost:5174/data/test" : 
+            "https://localhost:5174/data/real"
+            
+          const response = await fetch(url)
           const userInfo = await response.json()
           if (userInfo) {
             const currentUser = userInfo.find(u => u.uid === user.uid)
-            if (currentUser) setDeletedMessages(currentUser.deletedMsgs)
+            if (currentUser) { 
+              currentUser.deletedMsgs ? 
+                setDeletedMessages(currentUser.deletedMsgs) : 
+                setDeletedMessages([]) 
+            }
           }
         } catch (error) {
           console.error("Data not fetched: " + error)
@@ -181,7 +189,6 @@ function RecentChats() {
       } else {
         messageListener()
         messageList.style.borderBottom = "1px solid black"
-        //console.log(conversations)
       }
     }
   }, [conversations])
@@ -248,7 +255,7 @@ function RecentChats() {
                   <div className="dateOrTime">{displayDateOrTime(sentTime)}</div>
                 </div>
               )
-            })) : (<h2 style="text-align: center; opacity: 0.7;">No conversations to display.</h2>)}
+            })) : (<h2 style={{ textAlign: "center", opacity: 0.7 }}>No conversations to display.</h2>)}
         </div>
       </div>
     </div>

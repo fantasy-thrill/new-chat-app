@@ -29,13 +29,28 @@ const options = {
   passphrase: process.env.CERT_PASSPHRASE
 }
 
-function generateAuthToken(id) {
-  let authToken = `${id}_`
-  const characters = "abcdefghijklm0123456789nopqrstuvwxyz0123456789"
-  for (let i = 0; i < 40; i++) {
-    authToken += characters.charAt(Math.floor(Math.random() * characters.length))
+async function generateAuthToken(id) {
+  const options = {
+    method: 'POST',
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+      apikey: process.env.API_KEY
+    }
   }
-  return authToken
+
+  try {
+    const response = await fetch(
+      `https://${process.env.APP_ID}.api-us.cometchat.io/v3/users/${id}/auth_tokens`, 
+      options
+    )
+    const result = await response.json()
+    if (result) return result.data.authToken
+
+  } catch (error) {
+    console.error("Could not generate token: ", error)
+    return null
+  }
 }
 
 app.post("/create-account", upload.any(), async (req, res) => {
@@ -48,7 +63,6 @@ app.post("/create-account", upload.any(), async (req, res) => {
     const newUser = {
       name: name,
       uid: user_id,
-      authToken: generateAuthToken(user_id),
       password: hashedPassword
     }
 
@@ -72,6 +86,15 @@ app.post("/login", upload.none(), async (req, res) => {
 
     const passwordMatch = await bcrypt.compare(password, matchedUser.password)
     if (passwordMatch) {
+      if (!matchedUser.authToken) {
+        const newToken = await generateAuthToken(matchedUser.uid)
+        const updatedProp = {
+          $set: {
+            authToken: newToken
+          }
+        }
+        const result = await appUsers.updateOne({ uid: matchedUser.uid }, updatedProp)
+      }
       return res.status(200).json(matchedUser)
     } else {
       return res.status(401).json({ error: "Invalid password" })
