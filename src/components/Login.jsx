@@ -74,15 +74,6 @@ function Login() {
     setIsSubmitting(prevState => !prevState)
   }
 
-  // function handleInputChange(e) {
-  //   setUsername(e.target.value)
-  //   // setErrorMessage("");
-  // }
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
-
   if (isAuthenticated) {
     return (
       <Navigate
@@ -144,11 +135,12 @@ function Login() {
             <input
               onChange={e => setUsername(e.target.value)}
               type="text"
+              name="user_id"
               id="uid-login"
             />
 
             <label htmlFor="pwd-login">Password</label>
-            <input type="password" id="pwd-login" />
+            <input type="password" name="password" id="pwd-login" />
 
             <span className="error">{errorMessage}</span>
             {isSubmitting ? (

@@ -57,8 +57,28 @@ app.post("/create-account", upload.any(), async (req, res) => {
     console.log("User account created successfully!")
   
   } catch (error) {
-    res.end("No account created")
+    res.status(400).json({ message: "No account created" })
     console.log(error)
+  }
+})
+
+app.post("/login", upload.none(), async (req, res) => {
+  try {
+    const { user_id, password } = req.body
+    const appUsers = db.collection(process.env.DB_USER_COLLECTION)
+    const matchedUser = await appUsers.findOne({ uid: user_id })
+
+    if (!matchedUser) return res.status(401).json({ error: "User not found" })
+
+    const passwordMatch = await bcrypt.compare(password, matchedUser.password)
+    if (passwordMatch) {
+      return res.status(200).json(matchedUser)
+    } else {
+      return res.status(401).json({ error: "Invalid password" })
+    }
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ message: "Internal server error" })
   }
 })
 
