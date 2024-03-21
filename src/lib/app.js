@@ -94,6 +94,7 @@ app.post("/login", upload.none(), async (req, res) => {
           }
         }
         const result = await appUsers.updateOne({ uid: matchedUser.uid }, updatedProp)
+        return res.status(200).json({ ...matchedUser, authToken: newToken })
       }
       return res.status(200).json(matchedUser)
     } else {

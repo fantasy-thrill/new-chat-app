@@ -1,15 +1,28 @@
 import React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import chat from "../lib/chatdata"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons"
+import { faArrowLeft, faCheck, faXmark } from "@fortawesome/free-solid-svg-icons"
 
 function CreateAccount() {
+  const [usernameInput, setUsernameInput] = useState("")
+  const [passwordInput, setPassowrdInput] = useState("")
   const [submitted, setSubmitted] = useState(false)
 
   const navigate = useNavigate()
-  const passwordExp = "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}"
+  
+  const expressions = {
+    username: "^[a-zA-Z0-9_.-]{8,}$",
+    password: "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}",
+    validation: function(param, str) {
+      if (param === "username") {
+        return new RegExp(this.username).test(str)
+      } else {
+        return new RegExp(this.password).test(str)
+      }
+    }
+  }
 
   async function submitAccountCreation(event) {
     event.preventDefault()
@@ -39,26 +52,63 @@ function CreateAccount() {
       </div>
       {submitted ? (
         <h1 style={{ textAlign: "center" }}>
-          You have successfully created your account! Click the link above to log in.
+          You have successfully created your account! Click the link above to
+          log in.
         </h1>
       ) : (
         <div>
           <h2 style={{ textAlign: "center" }}>Sign up for Yapper</h2>
           <form onSubmit={submitAccountCreation}>
-
             <div id="creation-form">
               <label htmlFor="name">Full display name: </label>
               <input type="text" name="name" id="name" required />
 
               <label htmlFor="user-id">User ID: </label>
-              <input type="text" name="user_id" id="user-id" required />
+              <input
+                type="text"
+                name="user_id"
+                id="user-id"
+                pattern={expressions.username}
+                onChange={(e) => setUsernameInput(e.target.value)}
+                required
+              />
 
               <label htmlFor="set-profile-pic">Profile picture: </label>
-              <input type="file" id="set-profile-pic" accept="image/*,.jpg,.jpeg,.png" />
+              <input
+                type="file"
+                id="set-profile-pic"
+                accept="image/*,.jpg,.jpeg,.png"
+              />
 
               <label htmlFor="create-password">Password: </label>
-              <input type="password" name="password" id="create-password" minLength={8} pattern={passwordExp} required />
+              <input
+                type="password"
+                name="password"
+                id="create-password"
+                minLength={8}
+                pattern={expressions.password}
+                onChange={(e) => setPassowrdInput(e.target.value)}
+                required
+              />
             </div>
+              <>
+                <p>
+                  <FontAwesomeIcon
+                    icon={
+                      expressions.validation("username", usernameInput) ? faCheck : faXmark
+                  } />
+                  Username must be at least 8 characters long and cannot contain
+                  any spaces or special characters other than dashes, periods,
+                  and underscores.
+                </p>
+                <p>
+                  <FontAwesomeIcon
+                    icon={
+                      expressions.validation("password", passwordInput) ? faCheck : faXmark
+                  } />
+                  Password must be at least 8 characters long and contain at least one number and one special character.
+                </p>
+              </>
 
             <button type="submit">Create account</button>
           </form>
