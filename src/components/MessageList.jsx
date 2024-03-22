@@ -228,8 +228,6 @@ function MessageList({ user, receiver, members, deletedList }) {
       typingListener()
     }
   }, [user])
-
-  // useEffect(() => console.log(selected), [selected])
   
   useEffect(() => {
     const chatList = document.getElementById("chatList")
@@ -255,7 +253,7 @@ function MessageList({ user, receiver, members, deletedList }) {
             console.log(receiver)
             getConversation()
           }}>
-          <option value="">Select receipient</option>
+          <option value={receiver}>Select receipient</option>
           {members.map(member => (
             <option value={member["name"]} key={member["key"]}>
               {member["name"]}

@@ -91,26 +91,38 @@ function CreateAccount() {
                 required
               />
             </div>
-              <>
-                <p>
+              <div style={{ margin: "1.25em 0" }}>
+                <p 
+                  className="validation"
+                  style={{ 
+                    color: expressions.validation("username", usernameInput) ? "#16912a" : "#e31414",
+                }}>
                   <FontAwesomeIcon
                     icon={
                       expressions.validation("username", usernameInput) ? faCheck : faXmark
-                  } />
+                    } 
+                    style={{ marginRight: "1em" }}/>
                   Username must be at least 8 characters long and cannot contain
                   any spaces or special characters other than dashes, periods,
                   and underscores.
                 </p>
-                <p>
+                <p 
+                  className="validation"
+                  style={{ 
+                    color: expressions.validation("password", passwordInput) ? "#16912a" : "#e31414",
+                }}>
                   <FontAwesomeIcon
                     icon={
                       expressions.validation("password", passwordInput) ? faCheck : faXmark
-                  } />
+                    } 
+                    style={{ marginRight: "1em" }}/>
                   Password must be at least 8 characters long and contain at least one number and one special character.
                 </p>
-              </>
+              </div>
 
-            <button type="submit">Create account</button>
+            <button type="submit" disabled={!usernameInput || !passwordInput}>
+              Create account
+            </button>
           </form>
         </div>
       )}

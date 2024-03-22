@@ -1,7 +1,7 @@
 const https = require("https")
 const fs = require("fs")
 const express = require("express")
-const { MongoClient, ObjectId } = require("mongodb")
+const { MongoClient } = require("mongodb")
 const app = express()
 const cors = require("cors")
 const bcrypt = require("bcrypt")
@@ -57,7 +57,6 @@ app.post("/create-account", upload.any(), async (req, res) => {
   try {
     const { name, user_id, password } = req.body
     const realUsers = db.collection(process.env.DB_USER_COLLECTION)
-    console.log(req.body)
     const hashedPassword = await bcrypt.hash(password, 10)
 
     const newUser = {
@@ -106,9 +105,9 @@ app.post("/login", upload.none(), async (req, res) => {
   }
 })
 
-app.get("/data/:col", async (req, res) => {
+app.get("/data/:col?", async (req, res) => {
   try {
-    const collectionName = req.params.col === "test" ? 
+    const collectionName = req.params.col ? 
       process.env.DB_TEST_COLLECTION : 
       process.env.DB_USER_COLLECTION
 

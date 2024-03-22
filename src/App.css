@@ -126,6 +126,15 @@ form button {
   font-size: 1em;
 }
 
+.validation {
+  opacity: 0.7;
+  font-size: 0.75em;
+}
+
+button[type="submit"]:disabled {
+  opacity: 0.5;
+}
+
 /* #creation-form input:invalid {
   border: 1px solid #ff0000;
 } */

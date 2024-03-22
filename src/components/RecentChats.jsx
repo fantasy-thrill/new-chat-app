@@ -2,7 +2,6 @@ import React from "react"
 import { Navigate, useNavigate } from "react-router-dom"
 import { useState, useEffect, useRef } from "react"
 import chat from "../lib/chatdata"
-// import { deleteMessages } from "../config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faPenToSquare,
@@ -153,7 +152,7 @@ function RecentChats() {
         try {
           const url = /superhero[1-5]/.test(user.uid) ? 
             "https://localhost:5174/data/test" : 
-            "https://localhost:5174/data/real"
+            "https://localhost:5174/data"
             
           const response = await fetch(url)
           const userInfo = await response.json()
@@ -255,7 +254,7 @@ function RecentChats() {
                   <div className="dateOrTime">{displayDateOrTime(sentTime)}</div>
                 </div>
               )
-            })) : (<h2 style={{ textAlign: "center", opacity: 0.7 }}>No conversations to display.</h2>)}
+          })) : (<h2 style={{ textAlign: "center", opacity: 0.7 }}>No conversations to display.</h2>)}
         </div>
       </div>
     </div>

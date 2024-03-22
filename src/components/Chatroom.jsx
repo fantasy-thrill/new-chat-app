@@ -109,11 +109,19 @@ function Chatroom() {
     if (user) {
       async function fetchData() {
         try {
-          const response = await fetch("https://localhost:5174/data/test")
+          const url = /superhero[1-5]/.test(user.uid) ? 
+            "https://localhost:5174/data/test" : 
+            "https://localhost:5174/data"
+            
+          const response = await fetch(url)
           const userInfo = await response.json()
           if (userInfo) {
             const currentUser = userInfo.find(u => u.uid === user.uid)
-            if (currentUser) setDeletedMessages(currentUser.deletedMsgs)
+            if (currentUser) { 
+              currentUser.deletedMsgs ? 
+                setDeletedMessages(currentUser.deletedMsgs) : 
+                setDeletedMessages([]) 
+            }
           }
         } catch (error) {
           console.error("Data not fetched: " + error)

@@ -1,11 +1,12 @@
 import React from "react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Navigate, useNavigate } from "react-router-dom"
 import chat from "../lib/chatdata"
 import logo from "../logo.svg"
 
 function Login() {
   const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -100,9 +101,8 @@ function Login() {
   return (
     <div className="App" style={{ height: "75vh" }}>
       <h1 style={{ margin: "0.25em 0" }}>YAPPER</h1>
-      <p>
-        Create an account through your CometChat dashboard or login with one of
-        our test users, superhero1, superhero2, etc.
+      <p style={{ width: "100%" }}>
+        Log in to your account below or create a new account. If you're a developer, log in using a test user ID and a provided authorization key. 
       </p>
       {developerLogin ? (
         <>
@@ -125,7 +125,7 @@ function Login() {
             {isSubmitting ? (
               <img src={logo} alt="Spinner component" className="App-logo" />
             ) : (
-              <button type="submit" disabled={username === ""} value="LOGIN">
+              <button type="submit" disabled={!username || !authKey} value="LOGIN">
                 LOGIN
               </button>
             )}
@@ -151,13 +151,13 @@ function Login() {
             />
 
             <label htmlFor="pwd-login">Password</label>
-            <input type="password" name="password" id="pwd-login" />
+            <input onChange={e => setPassword(e.target.value)} type="password" name="password" id="pwd-login" />
 
             <span className="error">{errorMessage}</span>
             {isSubmitting ? (
               <img src={logo} alt="Spinner component" className="App-logo" />
             ) : (
-              <button type="submit" disabled={username === ""} value="LOGIN">
+              <button type="submit" disabled={!username || !password} value="LOGIN">
                 LOGIN
               </button>
             )}
