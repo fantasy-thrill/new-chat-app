@@ -7,6 +7,7 @@ const cors = require("cors")
 const bcrypt = require("bcrypt")
 const multer = require("multer")
 const upload = multer()
+const mailer = require("nodemailer")
 require("dotenv").config()
 
 const mongoURI = process.env.CONNECTION_STRING
@@ -105,6 +106,19 @@ app.post("/login", upload.none(), async (req, res) => {
   }
 })
 
+app.post("/password-recovery", async (req, res) => {
+  const { email } = req.body
+  const transporter = mailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.SERVER_EMAIL,
+      pass: process.env.SERVER_EMAIL_PASSWORD
+    }
+  })
+
+  // Rest of code for handling outbound emails goes here...
+})
+
 app.get("/data/:col?", async (req, res) => {
   try {
     const collectionName = req.params.col ? 
@@ -149,5 +163,5 @@ app.put("/update/:uid/:msgid", async (req, res) => {
 })
 
 https.createServer(options, app).listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`)
+  console.log(`Server is running on https://localhost:${port}`)
 })

@@ -165,6 +165,9 @@ function Login() {
           <span className="other-cases" onClick={() => navigate("/register")}>
             Create an account
           </span>
+          <span className="other-cases" onClick={() => navigate("/forgot-password")}>
+            Forgot password
+          </span>
           <span
             className="other-cases"
             onClick={() => {
