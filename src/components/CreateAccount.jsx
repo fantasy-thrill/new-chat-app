@@ -45,7 +45,7 @@ function CreateAccount() {
   }
 
   return (
-    <div id="account-creation">
+    <div className="account-cases">
       <div className="back-nav" onClick={() => navigate("/login")}>
         <FontAwesomeIcon icon={faArrowLeft} />
         <span style={{ marginLeft: "0.5em" }}>Back to login</span>

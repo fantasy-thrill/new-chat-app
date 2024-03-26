@@ -19,7 +19,7 @@
   height: 10vmin;
 }
 
-#account-creation {
+.account-cases {
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -113,6 +113,25 @@ form button {
   margin: 1.25em auto;
   background-color: #187dbc;
   padding: 0.5em 1em;
+  text-transform: uppercase;
+  color: #fff;
+  border: none;
+  border-radius: 0.25em;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+#email-input input {
+  font-size: 1em;
+  width: 25em;
+  margin-right: 1em;
+  padding: 0.25em 0;
+}
+
+#email-input button {
+  /* margin: 1.25em auto; */
+  background-color: #187dbc;
+  padding: 0.25em 0.75em;
   text-transform: uppercase;
   color: #fff;
   border: none;

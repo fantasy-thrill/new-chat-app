@@ -108,15 +108,56 @@ app.post("/login", upload.none(), async (req, res) => {
 
 app.post("/password-recovery", async (req, res) => {
   const { email } = req.body
+  let userID;
+  const appUsers = db.collection(process.env.DB_USER_COLLECTION)
+  const matchedUser = await appUsers.findOne({ email: email })
+  let recoveryCode = ""
+
+  const numbers = "1234567890"
+  for (let i = 0; i < 12; i++) {
+    recoveryCode += numbers.charAt(Math.floor(Math.random() * numbers.length))
+  }
+
+  if (matchedUser) userID = matchedUser.uid
+
   const transporter = mailer.createTransport({
     service: "gmail",
     auth: {
       user: process.env.SERVER_EMAIL,
       pass: process.env.SERVER_EMAIL_PASSWORD
+    },
+    tls: {
+      rejectUnauthorized: false
     }
   })
 
-  // Rest of code for handling outbound emails goes here...
+  const mailOptions = {
+    from: process.env.SERVER_EMAIL,
+    to: email,
+    subject: "Reset your password",
+    html: `
+      <h1>Password Recovery</h1>
+
+      <p>
+        Username: ${userID}
+        Please click the following link to reset your password.
+      </p>
+
+      <a href="https://localhost:5173/reset-password/${userID}/${recoveryCode}">
+        https://localhost:5173/reset-password/${userID}/${recoveryCode}
+      </a>
+    `
+  }
+
+  try {
+    const info = await transporter.sendMail(mailOptions)
+    console.log("Email sent: ", info)
+    res.sendStatus(200)
+
+  } catch (error) {
+    console.error("Error sending e-mail: ", error)
+    res.status(500).send("Recovery e-mail was not sent.")
+  }
 })
 
 app.get("/data/:col?", async (req, res) => {

@@ -1,12 +1,15 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons"
 
 
 function ForgotPassword() {
-  const [submitted, setSubmitted] = useState(false)
   const [emailInput, setEmailInput] = useState("")
+  const [emailSent, setEmailSent] = useState(false)
+
+  const navigate = useNavigate()
 
   async function sendEmail(address) {
     try {
@@ -17,13 +20,10 @@ function ForgotPassword() {
         if (matchedUser) {
           const response = await fetch("https://localhost:5174/password-recovery", {
             method: "POST",
-            body: {
-              email: address
-            }
+            body: { email: address }
           })
 
-          const result = response.json()
-          // Rest of e-mail handling code goes here
+          if (response.status === 200) setEmailSent(true) 
         }
       }
     } catch (error) {
@@ -37,7 +37,7 @@ function ForgotPassword() {
   }
 
   return (
-    <div>
+    <div className="account-cases">
       <div className="back-nav" onClick={() => navigate("/login")}>
         <FontAwesomeIcon icon={faArrowLeft} />
         <span style={{ marginLeft: "0.5em" }}>Back to login</span>
@@ -45,8 +45,21 @@ function ForgotPassword() {
       <div>
         <h2>Forgot your password?</h2>
         <p>Enter the e-mail address associated with your account below.</p>
-        <input type="email" name="email" id="email-input" onChange={(e) => setEmailInput(e.target.value)} />
-        <button type="submit" onClick={(e) => handleSubmit(e)}>Submit</button>
+        <div id="email-input">
+          <input
+            type="email"
+            name="email"
+            id="email-input"
+            onChange={e => setEmailInput(e.target.value)}
+            required
+          />
+          <button type="submit" onClick={e => handleSubmit(e)}>
+            Submit
+          </button>
+          {emailSent ? (
+            <p>A link to reset your password has been sent to your e-mail.</p>
+          ) : ""}
+        </div>
       </div>
     </div>
   )
