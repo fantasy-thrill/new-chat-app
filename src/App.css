@@ -20,7 +20,6 @@
 }
 
 .account-cases {
-  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -28,10 +27,6 @@
   margin: 0 auto;
 }
 
-/* input#name, input#user-id {
-  padding: 0.25em;
-  font-size: 1em;
-} */
 .other-cases {
   color: #187dbc;
   margin: 0.5em 0;
@@ -152,6 +147,7 @@ form button {
 
 button[type="submit"]:disabled {
   opacity: 0.5;
+  cursor: default;
 }
 
 /* #creation-form input:invalid {

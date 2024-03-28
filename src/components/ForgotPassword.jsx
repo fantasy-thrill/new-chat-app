@@ -17,10 +17,13 @@ function ForgotPassword() {
       const data = await response.json()
       if (data) {
         const matchedUser = data.find(user => user.email === address)
+
         if (matchedUser) {
+          let formData = new FormData()
+          formData.append("email", address)
           const response = await fetch("https://localhost:5174/password-recovery", {
             method: "POST",
-            body: { email: address }
+            body: formData
           })
 
           if (response.status === 200) setEmailSent(true) 
@@ -37,7 +40,7 @@ function ForgotPassword() {
   }
 
   return (
-    <div className="account-cases">
+    <div className="account-cases" style={{ height: "75vh" }}>
       <div className="back-nav" onClick={() => navigate("/login")}>
         <FontAwesomeIcon icon={faArrowLeft} />
         <span style={{ marginLeft: "0.5em" }}>Back to login</span>

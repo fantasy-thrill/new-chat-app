@@ -6,7 +6,6 @@ const app = express()
 const cors = require("cors")
 const bcrypt = require("bcrypt")
 const multer = require("multer")
-const upload = multer()
 const mailer = require("nodemailer")
 require("dotenv").config()
 
@@ -30,14 +29,30 @@ const options = {
   passphrase: process.env.CERT_PASSPHRASE
 }
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/")
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  },
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024
+  }
+})
+
 async function generateAuthToken(id) {
   const options = {
-    method: 'POST',
+    method: "POST",
     headers: {
-      accept: 'application/json',
-      'content-type': 'application/json',
-      apikey: process.env.API_KEY
-    }
+      accept: "application/json",
+      "content-type": "application/json",
+      apikey: process.env.API_KEY,
+    },
   }
 
   try {
@@ -54,7 +69,7 @@ async function generateAuthToken(id) {
   }
 }
 
-app.post("/create-account", upload.any(), async (req, res) => {
+app.post("/create-account", upload.single("profile_pic"), async (req, res) => {
   try {
     const { name, user_id, password } = req.body
     const realUsers = db.collection(process.env.DB_USER_COLLECTION)
@@ -63,6 +78,7 @@ app.post("/create-account", upload.any(), async (req, res) => {
     const newUser = {
       name: name,
       uid: user_id,
+      profilePicture: req.file.path,
       password: hashedPassword
     }
 
@@ -106,7 +122,7 @@ app.post("/login", upload.none(), async (req, res) => {
   }
 })
 
-app.post("/password-recovery", async (req, res) => {
+app.post("/password-recovery", upload.none(), async (req, res) => {
   const { email } = req.body
   let userID;
   const appUsers = db.collection(process.env.DB_USER_COLLECTION)

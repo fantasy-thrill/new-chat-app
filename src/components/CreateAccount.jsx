@@ -45,7 +45,7 @@ function CreateAccount() {
   }
 
   return (
-    <div className="account-cases">
+    <div className="account-cases" style={{ height: "100vh" }}>
       <div className="back-nav" onClick={() => navigate("/login")}>
         <FontAwesomeIcon icon={faArrowLeft} />
         <span style={{ marginLeft: "0.5em" }}>Back to login</span>
@@ -76,6 +76,7 @@ function CreateAccount() {
               <label htmlFor="set-profile-pic">Profile picture: </label>
               <input
                 type="file"
+                name="profile_pic"
                 id="set-profile-pic"
                 accept="image/*,.jpg,.jpeg,.png"
               />
