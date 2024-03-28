@@ -61,7 +61,14 @@ function CreateAccount() {
           <form onSubmit={submitAccountCreation}>
             <div id="creation-form">
               <label htmlFor="name">Full display name: </label>
-              <input type="text" name="name" id="name" required />
+              <input 
+                type="text" 
+                name="name" 
+                id="name" 
+                maxLength={40}
+                pattern="[^a-zA-Z0-9' ]" 
+                required 
+              />
 
               <label htmlFor="user-id">User ID: </label>
               <input
@@ -70,7 +77,16 @@ function CreateAccount() {
                 id="user-id"
                 pattern={expressions.username}
                 onChange={(e) => setUsernameInput(e.target.value)}
+                minLength={8}
+                maxLength={30}
                 required
+              />
+
+              <label htmlFor="email">E-mail: </label>
+              <input 
+                type="email" 
+                name="email" 
+                id="email" 
               />
 
               <label htmlFor="set-profile-pic">Profile picture: </label>
