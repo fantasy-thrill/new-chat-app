@@ -29,6 +29,17 @@ const options = {
   passphrase: process.env.CERT_PASSPHRASE
 }
 
+const transporter = mailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.SERVER_EMAIL,
+    pass: process.env.SERVER_EMAIL_PASSWORD
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+})
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/")
@@ -71,20 +82,50 @@ async function generateAuthToken(id) {
 
 app.post("/create-account", upload.single("profile_pic"), async (req, res) => {
   try {
-    const { name, user_id, password } = req.body
+    const { name, user_id, email, password } = req.body
     const realUsers = db.collection(process.env.DB_USER_COLLECTION)
     const hashedPassword = await bcrypt.hash(password, 10)
 
     const newUser = {
       name: name,
       uid: user_id,
+      email: email,
       profilePicture: req.file.path,
       password: hashedPassword
     }
 
+    const mailOptions = {
+      from: process.env.SERVER_EMAIL,
+      to: email,
+      subject: "Account creation successful",
+      html: `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+          <h1>Welcome to Yapper!</h1>
+        
+          <pre style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+            Dear ${name} (${user_id}),
+        
+            Welcome to Yapper! We're thrilled to have you join our community and embark on this messaging journey with us.
+        
+            As a new member, you now have access to a world of possibilities for connecting with friends, family, and colleagues. Whether you're looking to stay in touch with loved ones, collaborate with teammates, or meet new people, Yapper is here to make communication easy and enjoyable for you.
+        
+            We're committed to providing you with the best messaging experience possible, and we're continuously working to improve and enhance our app based on your feedback.
+        
+            If you have any questions, feedback, or suggestions, please don't hesitate to reach out to our support team. We're here to help and ensure that your experience with Yapper is seamless and enjoyable.
+        
+            Once again, welcome to Yapper! We look forward to helping you stay connected with the people who matter most to you.
+        
+            Best regards,
+            <b>Yapper Support Team</b>
+          </pre>
+        </div>
+      `
+    }
+
     const result = await realUsers.insertOne(newUser)
+    const info = await transporter.sendMail(mailOptions)
     res.json(newUser)
-    console.log("User account created successfully!")
+    console.log("User account created successfully!\n E-mail sent: ", info.response)
   
   } catch (error) {
     res.status(400).json({ message: "No account created" })
@@ -127,25 +168,18 @@ app.post("/password-recovery", upload.none(), async (req, res) => {
   let userID;
   const appUsers = db.collection(process.env.DB_USER_COLLECTION)
   const matchedUser = await appUsers.findOne({ email: email })
-  let recoveryCode = ""
+  if (matchedUser) userID = matchedUser.uid
+
+  const recoveryStatus = {
+    code: "",
+    requestedBy: userID
+    // sentByEmail: true
+  }
 
   const numbers = "1234567890"
   for (let i = 0; i < 12; i++) {
-    recoveryCode += numbers.charAt(Math.floor(Math.random() * numbers.length))
+    recoveryStatus.code += numbers.charAt(Math.floor(Math.random() * numbers.length))
   }
-
-  if (matchedUser) userID = matchedUser.uid
-
-  const transporter = mailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.SERVER_EMAIL,
-      pass: process.env.SERVER_EMAIL_PASSWORD
-    },
-    tls: {
-      rejectUnauthorized: false
-    }
-  })
 
   const mailOptions = {
     from: process.env.SERVER_EMAIL,
@@ -155,24 +189,48 @@ app.post("/password-recovery", upload.none(), async (req, res) => {
       <h1>Password Recovery</h1>
 
       <p>
-        Username: ${userID}
+        Username: <b>${userID}</b>
+        <br>
         Please click the following link to reset your password.
       </p>
 
-      <a href="https://localhost:5173/reset-password/${userID}/${recoveryCode}">
-        https://localhost:5173/reset-password/${userID}/${recoveryCode}
+      <a href="https://localhost:5173/reset-password/${userID}/${recoveryStatus.code}">
+        https://localhost:5173/reset-password/${userID}/${recoveryStatus.code}
       </a>
     `
   }
 
   try {
     const info = await transporter.sendMail(mailOptions)
-    console.log("Email sent: ", info)
+    console.log("E-mail sent: ", info.response)
     res.sendStatus(200)
 
   } catch (error) {
     console.error("Error sending e-mail: ", error)
     res.status(500).send("Recovery e-mail was not sent.")
+  }
+})
+
+app.put("/update-password/:userID", upload.none(), async (req, res) => {
+  const { new_password } = req.body
+
+  try {
+    const userList = db.collection(process.env.DB_USER_COLLECTION)
+    const filter = { uid: req.params.userID }
+
+    const newHashedPassword = await bcrypt.hash(new_password, 10)
+    const updateDoc = {
+      $set: {
+        password: newHashedPassword
+      }
+    }
+    const result = await userList.updateOne(filter, updateDoc)
+    res.sendStatus(200)
+    console.log("User password successfully changed")
+
+  } catch (error) {
+    res.sendStatus(500)
+    console.log("User password could not be changed", error)
   }
 })
 

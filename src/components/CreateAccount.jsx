@@ -1,5 +1,5 @@
 import React from "react"
-import { useState, useEffect, useRef } from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import chat from "../lib/chatdata"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -61,7 +61,14 @@ function CreateAccount() {
           <form onSubmit={submitAccountCreation}>
             <div id="creation-form">
               <label htmlFor="name">Full display name: </label>
-              <input type="text" name="name" id="name" required />
+              <input
+                type="text"
+                name="name"
+                id="name"
+                maxLength={40}
+                pattern="[^a-zA-Z0-9' ]"
+                required
+              />
 
               <label htmlFor="user-id">User ID: </label>
               <input
@@ -69,9 +76,14 @@ function CreateAccount() {
                 name="user_id"
                 id="user-id"
                 pattern={expressions.username}
-                onChange={(e) => setUsernameInput(e.target.value)}
+                onChange={e => setUsernameInput(e.target.value)}
+                minLength={8}
+                maxLength={30}
                 required
               />
+
+              <label htmlFor="email">E-mail: </label>
+              <input type="email" name="email" id="email" />
 
               <label htmlFor="set-profile-pic">Profile picture: </label>
               <input
@@ -88,38 +100,49 @@ function CreateAccount() {
                 id="create-password"
                 minLength={8}
                 pattern={expressions.password}
-                onChange={(e) => setPassowrdInput(e.target.value)}
+                onChange={e => setPassowrdInput(e.target.value)}
                 required
               />
             </div>
-              <div style={{ margin: "1.25em 0" }}>
-                <p 
-                  className="validation"
-                  style={{ 
-                    color: expressions.validation("username", usernameInput) ? "#16912a" : "#e31414",
+            <div style={{ margin: "1.25em 0" }}>
+              <p
+                className="validation"
+                style={{
+                  color: expressions.validation("username", usernameInput)
+                    ? "#16912a"
+                    : "#e31414",
                 }}>
-                  <FontAwesomeIcon
-                    icon={
-                      expressions.validation("username", usernameInput) ? faCheck : faXmark
-                    } 
-                    style={{ marginRight: "1em" }}/>
-                  Username must be at least 8 characters long and cannot contain
-                  any spaces or special characters other than dashes, periods,
-                  and underscores.
-                </p>
-                <p 
-                  className="validation"
-                  style={{ 
-                    color: expressions.validation("password", passwordInput) ? "#16912a" : "#e31414",
+                <FontAwesomeIcon
+                  icon={
+                    expressions.validation("username", usernameInput)
+                      ? faCheck
+                      : faXmark
+                  }
+                  style={{ marginRight: "1em" }}
+                />
+                Username must be at least 8 characters long and cannot contain
+                any spaces or special characters other than dashes, periods, and
+                underscores.
+              </p>
+              <p
+                className="validation"
+                style={{
+                  color: expressions.validation("password", passwordInput)
+                    ? "#16912a"
+                    : "#e31414",
                 }}>
-                  <FontAwesomeIcon
-                    icon={
-                      expressions.validation("password", passwordInput) ? faCheck : faXmark
-                    } 
-                    style={{ marginRight: "1em" }}/>
-                  Password must be at least 8 characters long and contain at least one number and one special character.
-                </p>
-              </div>
+                <FontAwesomeIcon
+                  icon={
+                    expressions.validation("password", passwordInput)
+                      ? faCheck
+                      : faXmark
+                  }
+                  style={{ marginRight: "1em" }}
+                />
+                Password must be at least 8 characters long and contain at least
+                one number and one special character.
+              </p>
+            </div>
 
             <button type="submit" disabled={!usernameInput || !passwordInput}>
               Create account
