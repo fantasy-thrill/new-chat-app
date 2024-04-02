@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons"
 
 function ResetPassword() {
+  const [requests, setRequests] = useState(null)
   const [newPassword, setNewPassword] = useState("")
   const [secondEntry, setSecondEntry] = useState("")
   const [passwordReset, setPasswordReset] = useState(false)
@@ -18,6 +19,8 @@ function ResetPassword() {
     }
   }
 
+  
+
   async function resetUserPassword() {
     try {
       const response = await fetch(`https://localhost:5174/update-password/${userID}`)
@@ -30,6 +33,19 @@ function ResetPassword() {
       console.error("Password update not successful", error)
     }
   }
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch("https://localhost:5174/data/password-resets")
+        const data = response.json()
+        setRequests(data)
+      } catch (error) {
+        console.error("Password reset requests not fetched", error)
+      }
+    }
+    fetchData()
+  })
 
   return (
     <div>

@@ -167,13 +167,14 @@ app.post("/password-recovery", upload.none(), async (req, res) => {
   const { email } = req.body
   let userID;
   const appUsers = db.collection(process.env.DB_USER_COLLECTION)
+  const passwordResetRequests = db.collection(process.env.PASSWORD_RESETS)
   const matchedUser = await appUsers.findOne({ email: email })
   if (matchedUser) userID = matchedUser.uid
 
   const recoveryStatus = {
     code: "",
-    requestedBy: userID
-    // sentByEmail: true
+    requestedBy: userID,
+    requestTime: new Date().getTime()
   }
 
   const numbers = "1234567890"
@@ -201,6 +202,7 @@ app.post("/password-recovery", upload.none(), async (req, res) => {
   }
 
   try {
+    const result = await passwordResetRequests.insertOne(recoveryStatus)
     const info = await transporter.sendMail(mailOptions)
     console.log("E-mail sent: ", info.response)
     res.sendStatus(200)
@@ -234,11 +236,18 @@ app.put("/update-password/:userID", upload.none(), async (req, res) => {
   }
 })
 
-app.get("/data/:col?", async (req, res) => {
+app.get("/data/:col", async (req, res) => {
+  const collections = {
+    "users": process.env.DB_USER_COLLECTION,
+    "test": process.env.DB_TEST_COLLECTION,
+    "password-resets": process.env.PASSWORD_RESETS
+  }
+
   try {
-    const collectionName = req.params.col ? 
-      process.env.DB_TEST_COLLECTION : 
-      process.env.DB_USER_COLLECTION
+    let collectionName;
+    for (const param in collections) {
+      if (req.params.col === param) collectionName = collections[param]
+    }
 
     const result = await db
       .collection(collectionName)

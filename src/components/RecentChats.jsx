@@ -152,7 +152,7 @@ function RecentChats() {
         try {
           const url = /superhero[1-5]/.test(user.uid) ? 
             "https://localhost:5174/data/test" : 
-            "https://localhost:5174/data"
+            "https://localhost:5174/data/users"
             
           const response = await fetch(url)
           const userInfo = await response.json()
