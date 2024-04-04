@@ -3,9 +3,11 @@ import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons"
+import loader from "../assets/loader.svg"
 
 function ResetPassword() {
-  const [requests, setRequests] = useState(null)
+  const [requestValid, setRequestValid] = useState(false)
+  const [resolved, setResolved] = useState(false)
   const [newPassword, setNewPassword] = useState("")
   const [secondEntry, setSecondEntry] = useState("")
   const [passwordReset, setPasswordReset] = useState(false)
@@ -18,8 +20,6 @@ function ResetPassword() {
       return new RegExp(this.expression).test(str)
     }
   }
-
-  
 
   async function resetUserPassword() {
     try {
@@ -36,10 +36,21 @@ function ResetPassword() {
 
   useEffect(() => {
     async function fetchData() {
+      const currentTimestamp = new Date().getTime()
+       
       try {
         const response = await fetch("https://localhost:5174/data/password-resets")
-        const data = response.json()
-        setRequests(data)
+        const data = await response.json()
+        if (data) {
+          const matchedRequest = data.find(req => req.code === recoveryCode)
+          
+          if (matchedRequest) {
+            const afterFifteenMins = currentTimestamp > matchedRequest.requestTime + 900000
+            if (!afterFifteenMins) setRequestValid(true)
+          }
+          setResolved(true)
+        }
+
       } catch (error) {
         console.error("Password reset requests not fetched", error)
       }
@@ -47,7 +58,7 @@ function ResetPassword() {
     fetchData()
   })
 
-  return (
+  return resolved && requestValid ? (
     <div>
       <h2>Reset Your Password</h2>
       <div className="account-cases">
@@ -128,6 +139,16 @@ function ResetPassword() {
           )}
         </div>
       </div>
+    </div>
+  ) : resolved && !requestValid ? (
+    <div>
+      <h1>Unauthorized!</h1>
+      <p>Password reset request does not exist or expired.</p>
+    </div>
+  ) : (
+    <div id="loading">
+      <img src={loader} />
+      <h2 style={{ textAlign: "center" }}>Loading...</h2>
     </div>
   )
 }

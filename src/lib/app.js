@@ -218,7 +218,9 @@ app.put("/update-password/:userID", upload.none(), async (req, res) => {
 
   try {
     const userList = db.collection(process.env.DB_USER_COLLECTION)
-    const filter = { uid: req.params.userID }
+    const requestList = db.collection(process.env.PASSWORD_RESETS)
+    const firstFilter = { uid: req.params.userID }
+    const secondFilter = { requestedBy: req.params.userID }
 
     const newHashedPassword = await bcrypt.hash(new_password, 10)
     const updateDoc = {
@@ -226,7 +228,9 @@ app.put("/update-password/:userID", upload.none(), async (req, res) => {
         password: newHashedPassword
       }
     }
-    const result = await userList.updateOne(filter, updateDoc)
+
+    const firstResult = await userList.updateOne(firstFilter, updateDoc)
+    const secondResult = await requestList.deleteMany(secondFilter)
     res.sendStatus(200)
     console.log("User password successfully changed")
 

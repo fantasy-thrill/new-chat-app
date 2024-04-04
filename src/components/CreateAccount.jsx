@@ -7,6 +7,7 @@ import { faArrowLeft, faCheck, faXmark } from "@fortawesome/free-solid-svg-icons
 
 function CreateAccount() {
   const [usernameInput, setUsernameInput] = useState("")
+  const [fullName, setFullName] = useState("")
   const [passwordInput, setPassowrdInput] = useState("")
   const [submitted, setSubmitted] = useState(false)
 
@@ -65,8 +66,9 @@ function CreateAccount() {
                 type="text"
                 name="name"
                 id="name"
+                minLength={4}
                 maxLength={40}
-                pattern="[^a-zA-Z0-9' ]"
+                onChange={e => setFullName(e.target.value)}
                 required
               />
 
@@ -108,6 +110,23 @@ function CreateAccount() {
               <p
                 className="validation"
                 style={{
+                  color: fullName && !/[^a-zA-Z' ]/.test(fullName)
+                    ? "#16912a"
+                    : "#e31414",
+                }}>
+                <FontAwesomeIcon
+                  icon={
+                    fullName && !/[^a-zA-Z' ]/.test(fullName)
+                      ? faCheck
+                      : faXmark
+                  }
+                  style={{ marginRight: "1em" }}
+                />
+                Full screen name must contain only letters. No numbers or special characters, besides an apostrophe.
+              </p>
+              <p
+                className="validation"
+                style={{
                   color: expressions.validation("username", usernameInput)
                     ? "#16912a"
                     : "#e31414",
@@ -144,7 +163,7 @@ function CreateAccount() {
               </p>
             </div>
 
-            <button type="submit" disabled={!usernameInput || !passwordInput}>
+            <button type="submit" disabled={!fullName || !usernameInput || !passwordInput}>
               Create account
             </button>
           </form>
