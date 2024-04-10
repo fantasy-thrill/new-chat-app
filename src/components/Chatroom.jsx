@@ -59,26 +59,34 @@ function Chatroom() {
       })
   }
 
-  function getGroupList() {
-    chat
-      .getGroupMembers(GUID)
-      .fetchNext()
-      .then(
-        groupMembers => {
-          const groupMemberNames = groupMembers
-            .map((member, index) => ({
-              name: member["uid"],
-              key: "00" + (index + 1),
-            }))
-            .filter(member => member["name"] !== user["uid"])
-          setMemberList(groupMemberNames)
-          console.log(groupMemberNames)
-          console.log(user["uid"])
-        },
-        error => {
-          console.log("Error fetching group members:", error)
+  function getUserList() {
+    let request = /superhero[1-5]/.test(user.uid)
+      ? chat.testUsersRequest()
+      : chat.usersRequest()
+
+    request.then(
+      groupMembers => {
+        const userFilter = member => {
+          const firstFilter = !/superhero[1-5]/.test(member["uid"])
+          const secondFilter = member["uid"] !== user["uid"]
+          return /superhero[1-5]/.test(user.uid) 
+            ? secondFilter
+            : firstFilter && secondFilter 
         }
-      )
+        const groupMemberNames = groupMembers
+          .map((member, index) => ({
+            name: member["uid"],
+            key: "00" + (index + 1),
+          }))
+          .filter(userFilter)
+        setMemberList(groupMemberNames)
+        console.log(groupMemberNames)
+        console.log(user["uid"])
+      },
+      error => {
+        console.log("Error fetching group members:", error)
+      }
+    )
   }
 
   function backToConversationList() {
@@ -128,7 +136,7 @@ function Chatroom() {
         }
       }
       fetchData()
-      getGroupList()
+      getUserList()
     }
   }, [user])
 

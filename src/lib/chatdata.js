@@ -61,6 +61,13 @@ export default class CCManager {
       .build()
     return usersRequest.fetchNext()
   }
+  static testUsersRequest() {
+    const testUsersRequest = new CometChat.UsersRequestBuilder()
+      .setLimit(10)
+      .setSearchKeyword("super")
+      .build()
+    return testUsersRequest.fetchNext()
+  }
   static messagesRequest(UID, limit) {
     const messagesRequest = new CometChat.MessagesRequestBuilder()
       .setUID(UID)
