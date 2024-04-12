@@ -8,7 +8,7 @@ import {
   faRightToBracket,
   faCircle,
 } from "@fortawesome/free-solid-svg-icons"
-import { displayDateOrTime } from "../smalleffects"
+import { testUserRegex, displayDateOrTime } from "../smalleffects"
 import loader from "../assets/loader.svg"
 
 function RecentChats() {
@@ -150,7 +150,7 @@ function RecentChats() {
     if (user) {
       async function fetchData() {
         try {
-          const url = /superhero[1-5]/.test(user.uid) ? 
+          const url = testUserRegex.test(user.uid) ? 
             "https://localhost:5174/data/test" : 
             "https://localhost:5174/data/users"
             

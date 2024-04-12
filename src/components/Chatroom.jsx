@@ -2,6 +2,7 @@ import React from "react"
 import { useState, useEffect, useMemo } from "react"
 import { Navigate, useNavigate, useLocation } from "react-router-dom"
 import chat from "../lib/chatdata.js"
+import { testUserRegex } from "../smalleffects.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faArrowLeft,
@@ -60,16 +61,16 @@ function Chatroom() {
   }
 
   function getUserList() {
-    let request = /superhero[1-5]/.test(user.uid)
+    let request = testUserRegex.test(user.uid)
       ? chat.testUsersRequest()
       : chat.usersRequest()
 
     request.then(
       groupMembers => {
         const userFilter = member => {
-          const firstFilter = !/superhero[1-5]/.test(member["uid"])
+          const firstFilter = !testUserRegex.test(member["uid"])
           const secondFilter = member["uid"] !== user["uid"]
-          return /superhero[1-5]/.test(user.uid) 
+          return testUserRegex.test(user.uid) 
             ? secondFilter
             : firstFilter && secondFilter 
         }
@@ -117,7 +118,7 @@ function Chatroom() {
     if (user) {
       async function fetchData() {
         try {
-          const url = /superhero[1-5]/.test(user.uid) ? 
+          const url = testUserRegex.test(user.uid) ? 
             "https://localhost:5174/data/test" : 
             "https://localhost:5174/data/users"
             

@@ -141,9 +141,10 @@ function ResetPassword() {
       </div>
     </div>
   ) : resolved && !requestValid ? (
-    <div>
-      <h1>Unauthorized!</h1>
+    <div style={{ margin: "5em" }}>
+      <h1 style={{ color: "#f51505" }}>Error: Unauthorized!</h1>
       <p>Password reset request does not exist or expired.</p>
+      <Link to="/login">Return to main page</Link>
     </div>
   ) : (
     <div id="loading">

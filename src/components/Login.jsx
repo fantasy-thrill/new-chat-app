@@ -3,6 +3,7 @@ import { useState } from "react"
 import { Navigate, useNavigate } from "react-router-dom"
 import chat from "../lib/chatdata"
 import logo from "../logo.svg"
+import { testUserRegex } from "../smalleffects"
 
 function Login() {
   const [username, setUsername] = useState("")
@@ -32,7 +33,6 @@ function Login() {
 
   function onSubmit(e) {
     e.preventDefault()
-    const testUserRegex = /superhero[1-5]/
 
     if (developerLogin) {
       if (

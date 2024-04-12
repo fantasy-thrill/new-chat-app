@@ -1,3 +1,5 @@
+export const testUserRegex = /superhero[1-5]/
+
 export function calculateTimeDifference(timestamp) {
   const currentDate = new Date()
   const timestampDate = new Date(timestamp * 1000)
