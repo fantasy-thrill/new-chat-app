@@ -99,26 +99,26 @@ app.post("/create-account", upload.single("profile_pic"), async (req, res) => {
       to: email,
       subject: "Account creation successful",
       html: `
-        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-          <h1>Welcome to Yapper!</h1>
-        
-          <pre style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-            Dear ${name} (${user_id}),
-        
-            Welcome to Yapper! We're thrilled to have you join our community and embark on this messaging journey with us.
-        
-            As a new member, you now have access to a world of possibilities for connecting with friends, family, and colleagues. Whether you're looking to stay in touch with loved ones, collaborate with teammates, or meet new people, Yapper is here to make communication easy and enjoyable for you.
-        
-            We're committed to providing you with the best messaging experience possible, and we're continuously working to improve and enhance our app based on your feedback.
-        
-            If you have any questions, feedback, or suggestions, please don't hesitate to reach out to our support team. We're here to help and ensure that your experience with Yapper is seamless and enjoyable.
-        
-            Once again, welcome to Yapper! We look forward to helping you stay connected with the people who matter most to you.
-        
-            Best regards,
-            <b>Yapper Support Team</b>
-          </pre>
-        </div>
+      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-left: 2.5em; max-width: 1000px">
+        <h1>Welcome to Yapper!</h1>
+      
+        <p style="white-space: pre-line">
+          Dear ${name} (${user_id}),
+      
+          Welcome to Yapper! We're thrilled to have you join our community.
+      
+          As a new member, you now have access to a world of possibilities for connecting with friends, family, and colleagues. Whether you're looking to stay in touch with loved ones, collaborate with teammates, or meet new people, Yapper is here to make communication easy and enjoyable for you.
+      
+          We're committed to providing you with the best messaging experience possible, and we're continuously working to improve and enhance our app based on your feedback.
+      
+          If you have any questions, feedback, or suggestions, please don't hesitate to reach out to us. We're here to help and ensure that your experience with Yapper is seamless and enjoyable.
+      
+          Once again, welcome to Yapper! We look forward to helping you stay connected with the people who matter most to you.
+      
+          Best regards,
+          <b>Yapper Support Team</b>
+        </p>
+      </div>
       `
     }
 
@@ -265,18 +265,19 @@ app.get("/data/:col", async (req, res) => {
   }
 })
 
-app.put("/update/:uid/:msgid", async (req, res) => {
+app.put("/update/:uid/:msgids", async (req, res) => {
   try {
     const collectionName = /superhero[1-5]/.test(req.params.uid) ? 
       process.env.DB_TEST_COLLECTION : 
       process.env.DB_USER_COLLECTION
     const appUsers = db.collection(collectionName)
-    
+
+    const msgidArr = req.params.msgids.split(",")
     const filter = { uid: req.params.uid }
     const user = await appUsers.findOne(filter)
     const updateDoc = {
       $set: {
-        deletedMsgs: [...user.deletedMsgs, req.params.msgid]
+        deletedMsgs: [...user.deletedMsgs, ...msgidArr]
       }
     }
 

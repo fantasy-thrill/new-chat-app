@@ -33,7 +33,8 @@ function CreateAccount() {
       const response = await fetch("https://localhost:5174/create-account", { 
         method: "POST",
         body: formData
-    })
+      })
+      
       const result = await response.json()
       if (result) {
         const { name, uid } = result

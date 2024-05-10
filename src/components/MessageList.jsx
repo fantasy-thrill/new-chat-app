@@ -16,7 +16,7 @@ function MessageList({ user, receiver, members, deletedList }) {
   const [messageText, setMessageText] = useState("")
   const [contextMenuDisplay, setContextMenuDisplay] = useState("none")
   const [menuCoordinates, setMenuCoordinates] = useState({ x: 0, y: 0 })
-  const [selected, setSelected] = useState("")
+  const [selected, setSelected] = useState(null)
   const [isTyping, setIsTyping] = useState(false)
   const [recTyping, setRecTyping] = useState(false)
 
@@ -69,7 +69,7 @@ function MessageList({ user, receiver, members, deletedList }) {
             sendMessage()
           })
         } else {
-          console.log("Message not sent. Button doesn't work. " + error.code)
+          console.log("Message not sent. Button doesn't work.\n" + error.code)
         }
       }
     )
@@ -165,7 +165,7 @@ function MessageList({ user, receiver, members, deletedList }) {
 
   function displayContextMenu(event, messageID) {
     const parentElement = event.target.closest(".msg")
-    setSelected(messageID)
+    setSelected([messageID])
 
     if (parentElement) {
       event.preventDefault()
