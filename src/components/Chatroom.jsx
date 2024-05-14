@@ -22,7 +22,7 @@ function Chatroom() {
   const [memberList, setMemberList] = useState([])
   const [user, setUser] = useState(null)
   const [isAuthenticated, setIsAuthenticated] = useState(true)
-  const [deletedMessages, setDeletedMessages] = useState(undefined)
+  const [deletedMessages, setDeletedMessages] = useState([])
 
   let receiverID = useState(query.get("receipient") ?? "")[0]
   const navigate = useNavigate()
@@ -126,10 +126,8 @@ function Chatroom() {
           const userInfo = await response.json()
           if (userInfo) {
             const currentUser = userInfo.find(u => u.uid === user.uid)
-            if (currentUser) { 
-              currentUser.deletedMsgs ? 
-                setDeletedMessages(currentUser.deletedMsgs) : 
-                setDeletedMessages([]) 
+            if (currentUser && currentUser.deletedMsgs) { 
+              setDeletedMessages(currentUser.deletedMsgs)
             }
           }
         } catch (error) {

@@ -2,7 +2,8 @@ import React from "react"
 import { useState, useEffect, useRef } from "react"
 import chat from "../lib/chatdata.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faFaceSmile } from "@fortawesome/free-solid-svg-icons"
+import { faFaceSmile, faCircleCheck } from "@fortawesome/free-solid-svg-icons"
+import { faCircle } from "@fortawesome/free-regular-svg-icons"
 import {
   displayDateOrTime,
   darkenBackground,
@@ -12,11 +13,14 @@ import {
 import "@cometchat/uikit-elements"
 
 function MessageList({ user, receiver, members, deletedList }) {
+  const [receiverID, setReceiverID] = useState(receiver)
   const [textConversation, setTextConversation] = useState([])
   const [messageText, setMessageText] = useState("")
   const [contextMenuDisplay, setContextMenuDisplay] = useState("none")
   const [menuCoordinates, setMenuCoordinates] = useState({ x: 0, y: 0 })
-  const [selected, setSelected] = useState(null)
+  const [selected, setSelected] = useState([])
+  const [selectingMultiple, setSelectingMultiple] = useState(false)
+  const [iconStates, setIconStates] = useState({})
   const [isTyping, setIsTyping] = useState(false)
   const [recTyping, setRecTyping] = useState(false)
 
@@ -40,8 +44,13 @@ function MessageList({ user, receiver, members, deletedList }) {
     left: `${menuCoordinates.x}px`,
   }
 
+  const msgWrapperStyle = {
+    display: "flex",
+    alignItems: selectingMultiple ? "center" : ""
+  }
+
   function getConversation() {
-    chat.messagesRequest(receiver, 100).then(
+    chat.messagesRequest(receiverID, 100).then(
       messages => {
         const cleanList = messages.filter(
           message =>
@@ -118,7 +127,7 @@ function MessageList({ user, receiver, members, deletedList }) {
   function handleActivityRead(msgReceipt, error) {
     if (error) return console.log(`error: ${error}`)
     para.current.style.fontSize = "0.75em"
-    para.current.textContent = `Read ${displayDateOrTime(msgReceipt["readAt"])}`
+    para.current.textContent = `Read ${displayDateOrTime(msgReceipt.readAt)}`
     console.log(msgReceipt)
   }
 
@@ -209,17 +218,25 @@ function MessageList({ user, receiver, members, deletedList }) {
   }
 
   function deleteMessage(forEveryone) {
-    const messageToDelete = textConversation.find(message => message["id"] === selected)
+    const messageToDelete = textConversation.find(message => message.id === selected)
     const updatedConvo = textConversation.toSpliced(textConversation.indexOf(messageToDelete), 1)
     forEveryone ? chat.deleteMessage(selected) : updateData()
     setTextConversation(updatedConvo)
   }
 
+  function toggleIcons(msgid) {
+    setIconStates(prevState => ({
+      ...prevState,
+      [msgid]: prevState[msgid] === faCircle ? faCircleCheck : faCircle
+    }))
+    console.log("clicked, ", iconStates[msgid])
+  }
+
   useEffect(() => {
-    if (user && receiver) {
-      if (deletedList) getConversation()
+    if (user && receiverID) {
+      getConversation()
     }
-  }, [user, receiver, deletedList])
+  }, [user, receiverID])
 
   useEffect(() => {
     if (user) {
@@ -228,16 +245,15 @@ function MessageList({ user, receiver, members, deletedList }) {
       typingListener()
     }
   }, [user])
-  
-  useEffect(() => {
-    const chatList = document.getElementById("chatList")
-    if (chatList) scrollToBottom()
-  })
 
   useEffect(() => {
     if (textConversation.length > 0) {
+      scrollToBottom()
       displayReceipt()
       console.log(textConversation)
+      textConversation.forEach(msg => {
+        setIconStates(prevState => ({ ...prevState, [msg.id]: faCircle }))
+      })
     }
   }, [textConversation])
 
@@ -248,23 +264,40 @@ function MessageList({ user, receiver, members, deletedList }) {
         <select
           name="members"
           id="members"
-          onChange={(event) => {
-            receiver = event.target.value
-            console.log(receiver)
-            getConversation()
+          value={receiverID}
+          onChange={event => {
+            setReceiverID(event.target.value)
           }}>
-          <option value={receiver}>Select receipient</option>
+          <option value="">Select receipient</option>
           {members.map(member => (
-            <option value={member["name"]} key={member["key"]}>
-              {member["name"]}
+            <option value={member.name} key={member.key}>
+              {member.name}
             </option>
           ))}
         </select>
       </div>
       <ul className="chat" id="chatList">
-        {textConversation.map(message => (
-          <div key={message.id} id={message.id}>
-            {user.uid === message.sender.uid ? (
+        {textConversation.map(message => {
+          let icon = iconStates[message.id] || faCircle
+
+          return user.uid === message.sender.uid ? (
+            <div 
+              key={message.id} 
+              id={message.id}
+              style={{ 
+                ...msgWrapperStyle, 
+                justifyContent: selectingMultiple ? "space-between" : "end" 
+              }}>
+
+              <FontAwesomeIcon
+                icon={icon}
+                style={{ display: selectingMultiple ? "block" : "none" }}
+                size="sm"
+                onClick={() => {
+                  toggleIcons(message.id)
+                  setSelected(prevState => ([...prevState, message.id]))
+                }}
+              />
               <li className="self">
                 <div
                   className="msg"
@@ -280,7 +313,25 @@ function MessageList({ user, receiver, members, deletedList }) {
                   ""
                 )}
               </li>
-            ) : (
+            </div>
+          ) : (
+            <div 
+              key={message.id} 
+              id={message.id}
+              style={{ 
+                ...msgWrapperStyle, 
+                // justifyContent: selectingMultiple ? "start" : "" 
+              }}>
+
+              <FontAwesomeIcon
+                icon={icon}
+                style={{ display: selectingMultiple ? "block" : "none" }}
+                size="sm"
+                onClick={() => {
+                  toggleIcons(message.id)
+                  setSelected(prevState => ([...prevState, message.id]))
+                }}
+              />
               <li className="other">
                 <div
                   className="msg"
@@ -290,11 +341,11 @@ function MessageList({ user, receiver, members, deletedList }) {
                   <div className="message">{message.text}</div>
                 </div>
               </li>
-            )}
-          </div>
-        ))}
+            </div>
+          )
+        })}
       </ul>
-      {recTyping && <p>{receiver} is typing...</p>}
+      {recTyping && <p>{receiverID} is typing...</p>}
       <div className="chatInputWrapper">
         <cometchat-emoji-keyboard
           style={emojiKeyboardStyle}
@@ -324,8 +375,10 @@ function MessageList({ user, receiver, members, deletedList }) {
           <div
             className="menu-choice"
             onClick={() => {
-              const messageToDelete = textConversation.find(message => message["id"] === selected)
-              if (messageToDelete["sender"]["uid"] !== user["uid"]) {
+              const messageToDelete = textConversation.find(
+                message => message.id === selected[0]
+              )
+              if (messageToDelete.sender.uid !== user.uid) {
                 deleteMessage(false)
               } else {
                 displayDeleteMenu("block")
@@ -333,22 +386,26 @@ function MessageList({ user, receiver, members, deletedList }) {
             }}>
             Delete message
           </div>
-          <div className="menu-choice">Delete multiple</div>
+          <div 
+            className="menu-choice" 
+            onClick={() => setSelectingMultiple(true)}> 
+            Delete multiple
+          </div>
         </div>
       )}
       <div id="delete-menu">
         Do you want to delete messages only for you or for everyone in the
         conversation?
-        <div 
-          className="d-menu-choice" 
+        <div
+          className="d-menu-choice"
           onClick={() => {
             deleteMessage(false)
             displayDeleteMenu("none")
           }}>
           Delete for me
         </div>
-        <div 
-          className="d-menu-choice" 
+        <div
+          className="d-menu-choice"
           onClick={() => {
             deleteMessage(true)
             displayDeleteMenu("none")
@@ -357,8 +414,7 @@ function MessageList({ user, receiver, members, deletedList }) {
         </div>
         <div
           className="d-menu-choice"
-          onClick={() => displayDeleteMenu("none")}
-        >
+          onClick={() => displayDeleteMenu("none")}>
           Cancel
         </div>
       </div>
