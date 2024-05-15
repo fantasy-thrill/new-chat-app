@@ -11,27 +11,19 @@ import {
   displayDeleteMenu
 } from "../smalleffects.js"
 import "@cometchat/uikit-elements"
+import MessageBox from "./MessageBox.jsx"
 
 function MessageList({ user, receiver, members, deletedList }) {
   const [receiverID, setReceiverID] = useState(receiver)
   const [textConversation, setTextConversation] = useState([])
-  const [messageText, setMessageText] = useState("")
   const [contextMenuDisplay, setContextMenuDisplay] = useState("none")
   const [menuCoordinates, setMenuCoordinates] = useState({ x: 0, y: 0 })
   const [selected, setSelected] = useState([])
   const [selectingMultiple, setSelectingMultiple] = useState(false)
   const [iconStates, setIconStates] = useState({})
-  const [isTyping, setIsTyping] = useState(false)
   const [recTyping, setRecTyping] = useState(false)
 
-  const emojiKeyboardRef = useRef(null)
   const para = useRef(null)
-  // const GUID = config.GUID
-
-  const emojiKeyboardStyle = {
-    height: "250px",
-    display: "none",
-  }
 
   const contextMenuStyle = {
     display: contextMenuDisplay,
@@ -65,25 +57,6 @@ function MessageList({ user, receiver, members, deletedList }) {
     )
   }
 
-  function sendTextMessage(receipient) {
-    chat.sendIndividualMessage(receipient, messageText).then(
-      message => {
-        console.log("Message sent successfully:", message)
-        setTextConversation(prevState => [...prevState, message])
-        setMessageText("")
-      },
-      error => {
-        if (error.code === "ERR_NOT_A_MEMBER") {
-          chat.joinGroup(GUID).then(response => {
-            sendMessage()
-          })
-        } else {
-          console.log("Message not sent. Button doesn't work.\n" + error.code)
-        }
-      }
-    )
-  }
-
   function scrollToBottom() {
     const chatList = document.getElementById("chatList")
     const lastMessage = chatList.lastElementChild
@@ -91,30 +64,6 @@ function MessageList({ user, receiver, members, deletedList }) {
       behavior: "smooth",
       block: "end",
     })
-  }
-
-  function handleSubmit(event) {
-    event.preventDefault()
-    sendTextMessage(receiver)
-    event.target.reset()
-  }
-
-  function handleChange(event) {
-    setMessageText(event.target.value)
-    const emojiKeyboard = emojiKeyboardRef.current
-    emojiKeyboard.addEventListener("cc-emoji-clicked", e => {
-      setMessageText(event.target.value + e.detail.id)
-    })
-  }
-
-  function handleTypingStatus(event) {
-    if (event.key !== "Backspace" && !isTyping) {
-      chat.typingStarted(receiver, "user")
-      setIsTyping(true)
-    } else if (event.key === "Backspace" && isTyping) {
-      chat.typingStopped(receiver, "user")
-      setIsTyping(false)
-    }
   }
 
   function handleActivityReceived(msgReceipt, error) {
@@ -165,11 +114,6 @@ function MessageList({ user, receiver, members, deletedList }) {
         "Read " + displayDateOrTime(lastMessage["readAt"])
       para.current.style.fontSize = "0.75em"
     }
-  }
-
-  function displayEmojiKeyboard() {
-    const keyboard = emojiKeyboardRef.current
-    keyboard.classList.toggle("displayed")
   }
 
   function displayContextMenu(event, messageID) {
@@ -250,7 +194,6 @@ function MessageList({ user, receiver, members, deletedList }) {
     if (textConversation.length > 0) {
       scrollToBottom()
       displayReceipt()
-      console.log(textConversation)
       textConversation.forEach(msg => {
         setIconStates(prevState => ({ ...prevState, [msg.id]: faCircle }))
       })
@@ -346,30 +289,7 @@ function MessageList({ user, receiver, members, deletedList }) {
         })}
       </ul>
       {recTyping && <p>{receiverID} is typing...</p>}
-      <div className="chatInputWrapper">
-        <cometchat-emoji-keyboard
-          style={emojiKeyboardStyle}
-          ref={emojiKeyboardRef}></cometchat-emoji-keyboard>
-        <form onSubmit={handleSubmit}>
-          <FontAwesomeIcon
-            icon={faFaceSmile}
-            size="xl"
-            style={{ margin: "auto 0.75em", color: "#187dbc" }}
-            onClick={displayEmojiKeyboard}
-          />
-          <input
-            className="textarea input"
-            type="text"
-            placeholder="Enter your message..."
-            value={messageText}
-            onChange={handleChange}
-            onKeyDown={handleTypingStatus}
-          />
-          <button type="submit" id="sendButton">
-            Send
-          </button>
-        </form>
-      </div>
+      <MessageBox receiver={receiverID} setTextConversation={setTextConversation} />
       {contextMenuDisplay === "block" && (
         <div id="context-menu" style={contextMenuStyle}>
           <div
