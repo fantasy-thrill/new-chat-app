@@ -101,6 +101,7 @@ function Chatroom() {
 
   function logout() {
     chat.logout()
+    localStorage.removeItem("user")
     chat.removeListener(
       chat.LISTENER_KEY_MESSAGE,
       chat.LISTENER_KEY_ACTIVITY,

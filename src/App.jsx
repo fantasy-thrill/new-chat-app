@@ -9,9 +9,11 @@ import ResetPassword from "./components/ResetPassword"
 import "./App.css"
 
 function App() {
+  const user = JSON.parse(localStorage.getItem("user"))
+
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="/" element={<Navigate to={user ? "/recentmsgs" : "/login"} />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<CreateAccount />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />

@@ -71,6 +71,7 @@ function Login() {
       const user = await chat.login(token)
       setUser(user)
       setIsAuthenticated(true)
+      localStorage.setItem("user", JSON.stringify(user))
 
     } catch (error) {
       setErrorMessage("Login failed. Please try again")
