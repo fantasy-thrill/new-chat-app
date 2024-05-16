@@ -44,32 +44,32 @@ function RecentChats() {
             setConversations([])
           } else {
             const updatedList = conversationList.map(convo => {
-              const receiverID = convo["conversationWith"]["uid"]
+              const receiverID = convo.conversationWith.uid
               return chat.messagesRequest(receiverID, 100).then(
                 messages => {
                   const cleanList = messages.filter(
                     message =>
                       !message.hasOwnProperty("action") &&
                       !message.hasOwnProperty("deletedAt") &&
-                      !deletedMessages?.includes(message["id"])
+                      !deletedMessages?.includes(message.id)
                   )
-                  convo["lastMessage"] = cleanList[cleanList.length - 1]
+                  convo.lastMessage = cleanList[cleanList.length - 1]
                 },
                 error =>
-                  console.log("Could not display conversations: " + error)
+                  console.error("Could not display conversations:\n", error)
               )
             })
             Promise.all(updatedList).then(
               () => {
                 conversationList.forEach(convo => {
-                  if (!convo["lastMessage"].hasOwnProperty("deliveredAt")) {
-                    chat.markAsDelivered(convo["lastMessage"])
+                  if (!convo.lastMessage.hasOwnProperty("deliveredAt")) {
+                    chat.markAsDelivered(convo.lastMessage)
                   }
                 })
                 setConversations([...conversationList])
                 console.log("Conversations list received:", conversationList)
               },
-              error => console.log("Error setting up conversations: " + error)
+              error => console.error("Error setting up conversations: \n", error)
             )
           }
         },
@@ -99,7 +99,7 @@ function RecentChats() {
   }
 
   function updateConvoList(message, error) {
-    if (error) return console.log(`Error: ${error}`)
+    if (error) return console.error(`Error: ${error}`)
     recentConversations()
   }
 
@@ -120,7 +120,7 @@ function RecentChats() {
         )
         const lastMessage = cleanList[cleanList.length - 1]
         if (
-          lastMessage["sender"]["uid"] !== user["uid"] &&
+          lastMessage.sender.uid !== user.uid &&
           !lastMessage.hasOwnProperty("readAt")
         ) {
           chat.markAsRead(lastMessage)
@@ -197,8 +197,8 @@ function RecentChats() {
     <div id="page">
       <div className="navigation-recent">
         <div className="userInfo">
-          <img src={user["avatar"]} alt="" style={{ width: "30px" }} />
-          <p style={userNameStyle}>{user["name"]}</p>
+          <img src={user.avatar} alt="" style={{ width: "30px" }} />
+          <p style={userNameStyle}>{user.name}</p>
         </div>
         <button
           className="nav-btn"
@@ -219,27 +219,27 @@ function RecentChats() {
         <div id="messageList">
           {conversations.length !== 0 ? (
             conversations.map(convo => {
-              const receiverID = convo["conversationWith"]["uid"]
-              const receiverName = convo["conversationWith"]["name"]
-              const senderID = convo["lastMessage"]["sender"]["uid"]
-              const messageText = convo["lastMessage"]["text"]
+              const receiverID = convo.conversationWith.uid
+              const receiverName = convo.conversationWith.name
+              const senderID = convo.lastMessage.sender.uid
+              const messageText = convo.lastMessage.text
 
-              const sentTime = convo["lastMessage"]["sentAt"]
+              const sentTime = convo.lastMessage.sentAt
 
               return (
-                <div className="conversation" key={convo["conversationId"]} onClick={e => goToChat(receiverID)}>
+                <div className="conversation" key={convo.conversationId} onClick={e => goToChat(receiverID)}>
                   <div className="profilePic">
-                    <img src={convo["conversationWith"]["avatar"]} alt={receiverID} className="avatar" />
+                    <img src={convo.conversationWith.avatar} alt={receiverID} className="avatar" />
                   </div>
                   <div className="conversationInfo">
                     <h3 className="receiver">
                       {receiverName}
                       <span className="userID">{receiverID}</span>
                     </h3>
-                    {senderID === user["uid"] ? (
+                    {senderID === user.uid ? (
                       <p className="last-message">You: {messageText}</p>
-                    ) : senderID !== user["uid"] &&
-                      !convo["lastMessage"].hasOwnProperty("readAt") ? (
+                    ) : senderID !== user.uid &&
+                      !convo.lastMessage.hasOwnProperty("readAt") ? (
                       <>
                         <p className="last-message" style={unreadMsgStyle} ref={lastMessagePara}>
                           <FontAwesomeIcon icon={faCircle} size="sm" style={{ color: "#1c5bca" }} className="icon-spacing" />

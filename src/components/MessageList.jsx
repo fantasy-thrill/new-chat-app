@@ -71,6 +71,8 @@ function MessageList({ user, receiver, members, deletedList }) {
     para.current.style.fontSize = "0.75em"
     para.current.textContent = "Delivered"
     console.log(msgReceipt)
+
+    console.log("listener working")
   }
 
   function handleActivityRead(msgReceipt, error) {
@@ -84,7 +86,7 @@ function MessageList({ user, receiver, members, deletedList }) {
     if (error) return console.log(`error: ${error}`)
     setTextConversation(prevState => [...prevState, message])
     setRecTyping(false)
-    if (message["sender"]["uid"] !== user["uid"]) {
+    if (message.sender.uid !== user.uid) {
       chat.markAsDelivered(message)
       chat.markAsRead(message)
     }
@@ -106,14 +108,22 @@ function MessageList({ user, receiver, members, deletedList }) {
 
   function displayReceipt() {
     const lastMessage = textConversation[textConversation.length - 1]
-    if (
-      lastMessage["sender"]["uid"] === user["uid"] &&
-      lastMessage.hasOwnProperty("readAt")
-    ) {
-      para.current.textContent =
-        "Read " + displayDateOrTime(lastMessage["readAt"])
-      para.current.style.fontSize = "0.75em"
+    const hasBeenDelivered = lastMessage.hasOwnProperty("deliveredAt")
+    const hasBeenRead = lastMessage.hasOwnProperty("readAt")
+
+    if (lastMessage.sender.uid === user.uid) {
+      if (hasBeenDelivered && !hasBeenRead) {
+        para.current.textContent = "Delivered"
+        para.current.style.fontSize = "0.75em"
+
+      } else if (hasBeenDelivered && hasBeenRead) {
+        para.current.textContent =
+          "Read " + displayDateOrTime(lastMessage.readAt)
+        para.current.style.fontSize = "0.75em"
+      }
     }
+
+    console.log("receipt working")
   }
 
   function displayContextMenu(event, messageID) {
@@ -219,6 +229,12 @@ function MessageList({ user, receiver, members, deletedList }) {
           ))}
         </select>
       </div>
+      <button 
+        id="cancel-deletion"
+        style={{ display: selectingMultiple ? "block" : "none" }}
+        >
+          Cancel
+      </button>
       <ul className="chat" id="chatList">
         {textConversation.map(message => {
           let icon = iconStates[message.id] || faCircle
@@ -308,7 +324,9 @@ function MessageList({ user, receiver, members, deletedList }) {
           </div>
           <div 
             className="menu-choice" 
-            onClick={() => setSelectingMultiple(true)}> 
+            onClick={() => { 
+              setSelectingMultiple(true)
+            }}> 
             Delete multiple
           </div>
         </div>

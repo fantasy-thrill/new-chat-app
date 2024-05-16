@@ -328,6 +328,19 @@ body {
   border-radius: 20px;
 }
 
+#cancel-deletion {
+  width: fit-content;
+  font-size: 1.5em;
+  padding: 0.25em 1em;
+  background-color: red;
+  color: #fff;
+  border-radius: 0.5em;
+  border: none;
+  position: fixed;
+  top: 3.25em;
+  left: 45em;
+}
+
 .chatInputWrapper {
   display: grid;
   grid-row-start: 190;

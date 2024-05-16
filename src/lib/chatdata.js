@@ -71,6 +71,7 @@ export default class CCManager {
   static messagesRequest(UID, limit) {
     const messagesRequest = new CometChat.MessagesRequestBuilder()
       .setUID(UID)
+      .setTimestamp(1680321600000)
       .setLimit(limit)
       .build();
     return messagesRequest.fetchPrevious()
