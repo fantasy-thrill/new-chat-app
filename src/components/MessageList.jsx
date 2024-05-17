@@ -232,7 +232,7 @@ function MessageList({ user, receiver, members, deletedList }) {
       <button 
         id="cancel-deletion"
         style={{ display: selectingMultiple ? "block" : "none" }}
-        >
+        onClick={() => setSelectingMultiple(false)}>
           Cancel
       </button>
       <ul className="chat" id="chatList">
@@ -250,7 +250,10 @@ function MessageList({ user, receiver, members, deletedList }) {
 
               <FontAwesomeIcon
                 icon={icon}
-                style={{ display: selectingMultiple ? "block" : "none" }}
+                style={{ 
+                  display: selectingMultiple ? "block" : "none", 
+                  color: "#187dbc" 
+                }}
                 size="sm"
                 onClick={() => {
                   toggleIcons(message.id)

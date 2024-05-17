@@ -339,6 +339,7 @@ body {
   position: fixed;
   top: 3.25em;
   left: 45em;
+  cursor: pointer;
 }
 
 .chatInputWrapper {
