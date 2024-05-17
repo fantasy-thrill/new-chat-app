@@ -254,7 +254,10 @@ function MessageList({ user, receiver, members, deletedList }) {
                 size="sm"
                 onClick={() => {
                   toggleIcons(message.id)
-                  setSelected(prevState => ([...prevState, message.id]))
+                  setSelected(prevState => {
+                    if (prevState.includes(message.id)) return prevState.filter(msgid => msgid !== message.id)
+                    else return [...prevState, message.id]
+                  })
                 }}
               />
               <li className="self">
