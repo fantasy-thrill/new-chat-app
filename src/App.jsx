@@ -6,7 +6,7 @@ import RecentChats from "./components/RecentChats"
 import CreateAccount from "./components/CreateAccount"
 import ForgotPassword from "./components/ForgotPassword"
 import ResetPassword from "./components/ResetPassword"
-import "./App.css"
+import "./styles/App.css"
 
 function App() {
   const user = JSON.parse(localStorage.getItem("user"))
