@@ -4,4 +4,5 @@ src/config.js
 *.env
 *.pem
 src/lib/uploads
+dist
 vite.config.js.timestamp-1689016967970.mjs
