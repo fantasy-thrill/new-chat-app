@@ -1,17 +1,17 @@
-const https = require("https")
-const fs = require("fs")
+const serverless = require('serverless-http')
 const express = require("express")
 const { MongoClient } = require("mongodb")
 const app = express()
 const cors = require("cors")
 const bcrypt = require("bcrypt")
 const multer = require("multer")
+const { getStore } = require("@netlify/blobs")
+const formidable = require('formidable')
 const mailer = require("nodemailer")
 require("dotenv").config()
 
 const mongoURI = process.env.CONNECTION_STRING
 const dbName = process.env.DB_NAME
-const port = process.env.PORT
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -22,12 +22,6 @@ client.connect()
 console.log("Connected to MongoDB Atlas")
 
 const db = client.db(dbName)
-
-const options = {
-  key: fs.readFileSync("./key.pem"),
-  cert: fs.readFileSync("./cert.pem"),
-  passphrase: process.env.CERT_PASSPHRASE
-}
 
 const transporter = mailer.createTransport({
   service: "gmail",
@@ -291,6 +285,4 @@ app.put("/update/:uid/:msgids", async (req, res) => {
   }
 })
 
-https.createServer(options, app).listen(port, () => {
-  console.log(`Server is running on https://localhost:${port}`)
-})
+exports.handler = serverless(app)

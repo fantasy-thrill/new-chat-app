@@ -1,4 +1,8 @@
+[functions]
+  external_node_modules = ["express", "formidable"]
+  node_bundler = "esbuild"
+
 [[headers]]
-for = "/*.js"
-[headers.values]
-Content-Type = "application/javascript"
+  for = "/*.js"
+  [headers.values]
+  Content-Type = "application/javascript"
