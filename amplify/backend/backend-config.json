@@ -1,0 +1,165 @@
+{
+  "api": {
+    "backendDataAPI": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "createAccount"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "userLogin"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "recoverPassword"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "fetchData"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
+  "auth": {
+    "yappermsgapp": {
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "serviceType": "managed"
+    }
+  },
+  "function": {
+    "createAccount": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "fetchData": {
+      "build": true,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "recoverPassword": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "userLogin": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_createAccount_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "createAccount"
+        }
+      ]
+    },
+    "AMPLIFY_function_createAccount_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "createAccount"
+        }
+      ]
+    },
+    "AMPLIFY_function_fetchData_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "fetchData"
+        }
+      ]
+    },
+    "AMPLIFY_function_fetchData_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "fetchData"
+        }
+      ]
+    },
+    "AMPLIFY_function_fetchData_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "fetchData"
+        }
+      ]
+    },
+    "AMPLIFY_function_recoverPassword_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "recoverPassword"
+        }
+      ]
+    },
+    "AMPLIFY_function_recoverPassword_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "recoverPassword"
+        }
+      ]
+    },
+    "AMPLIFY_function_userLogin_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "userLogin"
+        }
+      ]
+    },
+    "AMPLIFY_function_userLogin_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "userLogin"
+        }
+      ]
+    }
+  }
+}
